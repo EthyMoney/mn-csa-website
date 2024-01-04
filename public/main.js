@@ -52,6 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
       attachments
     };
 
+    console.log('Card:', card)
+
     // Make an HTTP POST request to create a Trello card
     fetch('/submit', {
       method: 'POST',
@@ -66,6 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(data);
         // Display a success message to the user
         alert('Trello card created successfully!');
+        // Show a popup confirmation message to the user for 5 seconds, create the element and append it to the body
+        // TODO: doesn't work, make a proper popup dude
+        // const popup = document.createElement('div');
+        // popup.classList.add('popup');
+        // popup.innerHTML = 'Trello card created successfully!';
+        // document.body.appendChild(popup);
+        // // Remove the popup after 5 seconds
+        // setTimeout(() => {
+        //   popup.remove();
+        // }, 5000);
         // Reset the form
         form.reset();
       })

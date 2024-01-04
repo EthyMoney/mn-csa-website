@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const trelloManager = require('./trello.js');
 
 const app = express();
 const port = 3000;
@@ -10,6 +11,9 @@ app.disable('x-powered-by');
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
+
+// Configure body-parser to accept JSON (we need this or body will be empty)
+app.use(bodyParser.json());
 
 // Log all requests
 app.use((req, res, next) => {
@@ -38,6 +42,7 @@ app.post('/submit', (req, res) => {
 });
 
 // Start the server
-app.listen(port, () => {
+app.listen(port, async () => {
+  await trelloManager.verifyLabels();
   console.log(`Server is running on http://localhost:${port}`);
 });

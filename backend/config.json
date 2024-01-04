@@ -1,0 +1,120 @@
+{
+  "trelloBoards": [
+    {
+      "frontendEventSelection": "Granite City",
+      "boardID": "ZtNpeowg"
+    }
+  ],
+  "trelloBoardLabels": [
+    {
+      "name": "CANBus fault",
+      "color": "lime"
+    },
+    {
+      "name": "Code - C++",
+      "color": "blue"
+    },
+    {
+      "name": "Code - General",
+      "color": "blue"
+    },
+    {
+      "name": "Code - Java",
+      "color": "blue"
+    },
+    {
+      "name": "Code - LabView",
+      "color": "blue"
+    },
+    {
+      "name": "Code - Python",
+      "color": "blue"
+    },
+    {
+      "name": "Communication - Limelight",
+      "color": "purple"
+    },
+    {
+      "name": "Configuration",
+      "color": "sky"
+    },
+    {
+      "name": "Driver Station",
+      "color": "pink"
+    },
+    {
+      "name": "Electronic - Brownout",
+      "color": "red"
+    },
+    {
+      "name": "Electronic - Communication",
+      "color": "red"
+    },
+    {
+      "name": "Electronic - General",
+      "color": "red"
+    },
+    {
+      "name": "Electronic - Pneumatics",
+      "color": "red"
+    },
+    {
+      "name": "Electronic - Wiring",
+      "color": "red"
+    },
+    {
+      "name": "Electronic - incompatible components",
+      "color": "red"
+    },
+    {
+      "name": "Field - Brownouts",
+      "color": "black"
+    },
+    {
+      "name": "Field - Communication",
+      "color": "black"
+    },
+    {
+      "name": "Field - General",
+      "color": "black"
+    },
+    {
+      "name": "Field - roboRIO reboot",
+      "color": "black"
+    },
+    {
+      "name": "Firmware update",
+      "color": "orange"
+    },
+    {
+      "name": "Practice Field",
+      "color": "green"
+    },
+    {
+      "name": "Raspberry Pi",
+      "color": "yellow"
+    },
+    {
+      "name": "Other or not sure",
+      "color": "grey"
+    },
+    {
+      "name": "Critical Priority",
+      "color": "red"
+    },
+    {
+      "name": "High Priority",
+      "color": "orange"
+    },
+    {
+      "name": "Medium Priority",
+      "color": "yellow"
+    },
+    {
+      "name": "Low Priority",
+      "color": "green"
+    }
+  ],
+  "trelloAppKey": "",
+  "trelloUserToken": ""
+}
