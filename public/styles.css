@@ -1,0 +1,134 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+form {
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 400px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  background-color: #f2f2f2;
+  /* Default background color */
+  color: #292929;
+  /* Default text color */
+  box-sizing: border-box;
+}
+
+/* make the description input bigger */
+textarea {
+  height: 100px;
+}
+
+button[type="submit"] {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 20px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+/* Additional styles for dark mode */
+.light-mode {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.dark-mode {
+  background-color: #1b1b1b;
+  color: #f2f2f2;
+}
+
+.dark-mode form {
+  background-color: #282828;
+}
+
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea {
+  background-color: #444;
+  /* Dark mode background color */
+  color: #f2f2f2;
+  /* Dark mode text color */
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.toggle-label {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-label input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.toggle-label input:checked+.toggle-slider {
+  background-color: #2196F3;
+}
+
+.toggle-label input:checked+.toggle-slider:before {
+  transform: translateX(26px);
+}
+
+.toggle-text {
+  margin-left: 10px;
+}

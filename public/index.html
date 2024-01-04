@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>MN CSA FRC Event Support</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+  <h1>MN FRC Event CSA Support Request</h1>
+  <div class="toggle-container">
+    <label class="toggle-label">
+      <input type="checkbox" id="darkModeToggle">
+      <span class="toggle-slider"></span>
+    </label>
+    <span class="toggle-text">Dark Mode</span>
+  </div>
+  <form id="cardForm">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="teamNumber">Team Number:</label>
+    <input type="number" id="teamNumber" name="teamNumber" required>
+
+    <label for="event">Event:</label>
+    <select id="event" name="event" required>
+      <option value="" hidden selected>Choose...</option>
+      <option value="Duluth - Northern Lights">Duluth - Northern Lights</option>
+      <option value="Duluth - Lake Superior">Duluth - Lake Superior</option>
+      <option value="10k Lakes">10k Lakes</option>
+      <option value="Granite City">Granite City</option>
+    </select>
+
+    <label for="problemCategory">Problem Category:</label>
+    <select id="problemCategory" name="problemCategory" required>
+      <option value="" hidden selected>Choose...</option>
+      <option value="CANBus fault">CANBus fault</option>
+      <option value="Code - C++">Code - C++</option>
+      <option value="Code - General">Code - General</option>
+      <option value="Code - Java">Code - Java</option>
+      <option value="Code - LabView">Code - LabView</option>
+      <option value="Code - Python">Code - Python</option>
+      <option value="Communication - Limelight">Communication - Limelight</option>
+      <option value="Configuration">Configuration</option>
+      <option value="Driver Station">Driver Station</option>
+      <option value="Electronic - Brownout">Electronic - Brownout</option>
+      <option value="Electronic - Communication">Electronic - Communication</option>
+      <option value="Electronic - General">Electronic - General</option>
+      <option value="Electronic - Pneumatics">Electronic - Pneumatics</option>
+      <option value="Electronic - Wiring">Electronic - Wiring</option>
+      <option value="Electronic - incompatible components">Electronic - incompatible components</option>
+      <option value="Field - Brownouts">Field - Brownouts</option>
+      <option value="Field - Communication">Field - Communication</option>
+      <option value="Field - General">Field - General</option>
+      <option value="Field - roboRIO reboot">Field - roboRIO reboot</option>
+      <option value="Firmware update">Firmware update</option>
+      <option value="Practice Field">Practice Field</option>
+      <option value="Raspberry Pi">Raspberry Pi</option>
+      <option value="Other or not sure">Other</option>
+    </select>
+
+    <label for="priority">Priority Level:</label>
+    <select id="priority" name="priority" required>
+      <option value="" hidden selected>Choose...</option>
+      <option value="critical">Critical</option>
+      <option value="high">High</option>
+      <option value="medium">Medium</option>
+      <option value="low">Low</option>
+    </select>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
+
+    <label for="attachments">Attachments:</label>
+    <input type="file" id="attachments" name="attachments" multiple>
+
+    <!-- todo: remove the disabled attribute when backend it ready for this-->
+    <button type="submit" disabled>Create Request</button>
+  </form>
+
+  <p class="work-in-progress" style="text-align: center;">Note: This page is a work in progress, the layout and content
+    may change.<br><br>An additional
+    form for non-event help will be added soon!</p>
+
+  <script src="main.js"></script>
+</body>
+
+</html>
