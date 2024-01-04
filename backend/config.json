@@ -1,8 +1,24 @@
 {
   "trelloBoards": [
     {
+      "frontendEventSelection": "Duluth - Northern Lights",
+      "boardID": ""
+    },
+    {
+      "frontendEventSelection": "Duluth - Lake Superior",
+      "boardID": ""
+    },
+    {
+      "frontendEventSelection": "10,000 Lakes",
+      "boardID": ""
+    },
+    {
       "frontendEventSelection": "Granite City",
-      "boardID": "ZtNpeowg"
+      "boardID": ""
+    },
+    {
+      "frontendEventSelection": "Great Northern",
+      "boardID": ""
     }
   ],
   "trelloBoardLabels": [
