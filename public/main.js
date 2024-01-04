@@ -20,6 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('darkModeEnabled', isDarkModeEnabled);
   });
 
+  // Hide the default "Choose.." option in the dropdowns since apple devices don't support the "hidden" attribute
+  // This is also the window onload function, so if there's something else you want to do on load, add it here
+  window.onload = function () {
+    var selects = document.querySelectorAll('select');
+    selects.forEach(function (select) {
+      select.addEventListener('change', function () {
+        this.querySelector('option[value=""]').disabled = true;
+      });
+    });
+  }
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
 

@@ -35,6 +35,21 @@ textarea {
   box-sizing: border-box;
 }
 
+/* Override the default styles for the select field that apple tries to apply */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('dropdown-black.png');
+  background-size: 25px;
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+}
+
+.dark-mode select {
+  background-image: url('dropdown-white.png');
+}
+
 /* make the description input bigger */
 textarea {
   height: 100px;
@@ -50,7 +65,11 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #45a049;
+  background-color: #338237;
+}
+
+.button-container {
+  text-align: center;
 }
 
 /* Additional styles for dark mode */
@@ -131,4 +150,71 @@ button[type="submit"]:hover {
 
 .toggle-text {
   margin-left: 10px;
+}
+
+
+/* Styling for phone screens */
+
+/* Apply these styles when the screen width is 600px or less, which is basically every phone */
+@media screen and (max-width: 600px) {
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  #cardForm {
+    width: 100%;
+    /* Make the form take up the full width of the screen */
+    padding: 10px;
+    /* Add some padding around the form */
+  }
+
+  h1 {
+    padding: 10px;
+    font-size: 22px;
+  }
+
+  /* make the dark mode toggle a little smaller */
+  .toggle-label {
+    width: 40px;
+    height: 24px;
+  }
+
+  .toggle-slider {
+    border-radius: 24px;
+  }
+
+  .toggle-slider:before {
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+  }
+
+  .toggle-label input:checked+.toggle-slider:before {
+    transform: translateX(16px);
+  }
+
+  .toggle-text {
+    font-size: 14px;
+  }
+
+  .toggle-container {
+    margin-bottom: -20px;
+    margin-top: -20px;
+  }
+
+  #cardForm input[type="text"],
+  #cardForm input[type="number"],
+  #cardForm textarea {
+    margin-top: -5px;
+    margin-bottom: 5px;
+    width: 100%;
+    /* Make form fields take up the full width of the form */
+  }
+
+  #cardForm select {
+    margin-bottom: 10px;
+  }
 }

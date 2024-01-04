@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MN CSA FRC Event Support</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -77,7 +78,9 @@
     <input type="file" id="attachments" name="attachments" multiple>
 
     <!-- todo: remove the disabled attribute when backend it ready for this-->
-    <button type="submit" disabled>Create Request</button>
+    <div class="button-container">
+      <button id="createRequestButton" type="submit" disabled>Create Request</button>
+    </div>
   </form>
 
   <p class="work-in-progress" style="text-align: center;">Note: This page is a work in progress, the layout and content
