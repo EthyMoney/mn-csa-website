@@ -2,23 +2,23 @@
   "trelloBoards": [
     {
       "frontendEventSelection": "Duluth - Northern Lights",
-      "boardID": ""
+      "trelloId": ""
     },
     {
       "frontendEventSelection": "Duluth - Lake Superior",
-      "boardID": ""
+      "trelloId": ""
     },
     {
       "frontendEventSelection": "10,000 Lakes",
-      "boardID": ""
+      "trelloId": ""
     },
     {
       "frontendEventSelection": "Granite City",
-      "boardID": ""
+      "trelloId": ""
     },
     {
       "frontendEventSelection": "Great Northern",
-      "boardID": ""
+      "trelloId": ""
     }
   ],
   "trelloBoardLabels": [
@@ -112,7 +112,7 @@
     },
     {
       "name": "Other or not sure",
-      "color": "grey"
+      "color": "black"
     },
     {
       "name": "Critical Priority",
