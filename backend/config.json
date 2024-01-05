@@ -1,6 +1,10 @@
 {
   "trelloBoards": [
     {
+      "frontendEventSelection": "Build Season",
+      "trelloId": ""
+    },
+    {
       "frontendEventSelection": "Duluth - Northern Lights",
       "trelloId": ""
     },
