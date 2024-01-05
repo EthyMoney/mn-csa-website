@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const trelloManager = require('./trello.js');
 
 const app = express();
@@ -12,8 +11,8 @@ app.disable('x-powered-by');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
-// Configure body-parser to accept JSON (we need this or body will be empty)
-app.use(bodyParser.json());
+// Configure parsing body as JSON (we need this or body will be empty)
+app.use(express.json());
 
 // Log all requests
 app.use((req, res, next) => {
