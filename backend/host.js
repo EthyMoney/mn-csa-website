@@ -8,7 +8,7 @@ const port = 3000;
 app.disable('x-powered-by');
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(express.static('public'));
 
 // Configure parsing body as JSON (we need this or body will be empty)
