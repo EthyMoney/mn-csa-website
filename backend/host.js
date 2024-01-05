@@ -43,5 +43,6 @@ app.post('/submit', (req, res) => {
 // Start the server
 app.listen(port, async () => {
   await trelloManager.verifyLabels();
+  //await trelloManager.deleteAllLabelsOnBoard('CxCc1Ofe')
   console.log(`Server is running on http://localhost:${port}`);
 });

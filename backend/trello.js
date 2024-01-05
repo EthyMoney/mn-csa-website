@@ -7,7 +7,8 @@ const trelloLabels = config.trelloBoardLabels;
 
 
 // Some terms to understand:
-// trelloId: This is the ID of the board instance as you see it in your browser URL bar when viewing the board. This is NOT the same as the board ID!
+// trelloId: This is the ID of the board or element instance as you see it in your browser URL bar when viewing the board. This is NOT the same as the board ID!
+//           A trelloId can also be used as the ID for other things too, like lists, cards, labels. For example, a label's ID is a trelloId. This is just what trello calls these, they don't relate to each other.
 //           This is what is stored in the config file and is used to lookup the boardId and other info. It's shorter, looks something like this: CxCc1Ofe
 // boardId: This is the ID of the board as it is stored in Trello's database. These are longer and look something like this: 6596f1d9f2b262c8cef42fe4
 //          This is is needed to make creation calls to the API, whereas we use the trelloId to lookup a boardId and some other items too, like getting labels.
@@ -65,7 +66,6 @@ async function verifyLabels() {
   for (const board of trelloBoards) {
     const trelloId = board.trelloId;
     const boardId = await getBoardIdByTrelloId(trelloId);
-    console.log(boardId)
     // grab the labels currently present on the board, if any
     const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
     if (res.ok) {
@@ -79,7 +79,6 @@ async function verifyLabels() {
             method: 'POST'
           });
           if (res.ok) {
-            const resJson = await res.json();
             console.log(`Created label ${expectedLabel.name} on board ${trelloId}`);
           }
           else {
@@ -143,4 +142,28 @@ async function getBoardIdByTrelloId(trelloId) {
 }
 
 
-module.exports = { createCard, verifyLabels };
+
+// nuke all labels on the board (start fresh) - make certain you intend to use this before calling it, it will wipe custom labels you added too!
+async function deleteAllLabelsOnBoard(trelloId) {
+  const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
+  if (res.ok) {
+    const resJson = await res.json();
+    for (const label of resJson) {
+      const res = await fetch(`https://api.trello.com/1/labels/${label.id}?key=${config.trelloAppKey}&token=${config.trelloUserToken}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        console.log(`Deleted label ${label.name} on board ${trelloId}`);
+      }
+      else {
+        console.log(`Error deleting label ${label.name} on board ${trelloId} ---> ${res.status}: ${res.statusText}`)
+      }
+    }
+  }
+  else {
+    console.log(`Error getting labels on board ${trelloId}`);
+  }
+}
+
+
+module.exports = { createCard, verifyLabels, deleteAllLabelsOnBoard };
