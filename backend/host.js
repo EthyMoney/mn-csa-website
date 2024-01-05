@@ -2,7 +2,7 @@ const express = require('express');
 const trelloManager = require('./trello.js');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 // Disable x-powered-by header (hides that express is being used)
 app.disable('x-powered-by');
