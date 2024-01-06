@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Retrieve form data
     const title = document.getElementById('title').value;
     const teamNumber = document.getElementById('teamNumber').value;
+    const contactEmail = document.getElementById('contactEmail').value;
     const frcEvent = document.getElementById('event').value;
     const problemCategory = document.getElementById('problemCategory').value;
     const description = document.getElementById('description').value;
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = {
       title,
       teamNumber,
+      contactEmail,
       frcEvent,
       problemCategory,
       priority,
@@ -64,31 +66,24 @@ document.addEventListener('DOMContentLoaded', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(card)
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Handle the response from the server
-        console.log(data);
-        // Display a success message to the user
-        alert('Trello card created successfully!');
-        // Show a popup confirmation message to the user for 5 seconds, create the element and append it to the body
-        // TODO: doesn't work, make a proper popup dude
-        // const popup = document.createElement('div');
-        // popup.classList.add('popup');
-        // popup.innerHTML = 'Trello card created successfully!';
-        // document.body.appendChild(popup);
-        // // Remove the popup after 5 seconds
-        // setTimeout(() => {
-        //   popup.remove();
-        // }, 5000);
-        // Reset the form
-        form.reset();
-      })
-      .catch(error => {
-        // Handle any errors
-        console.error('Error:', error);
-        // Display an error message to the user
-        alert('An error occurred. Please try again.');
-      });
+    }).then(response => {
+      response.json();
+      // Display a success message to the user
+      const successMessage = document.getElementById('success-message');
+      successMessage.style.display = 'flex';
+      setTimeout(() => {
+        successMessage.style.display = 'none';
+      }, 5000);
+      // Clear the form
+      document.getElementById('cardForm').reset();
+    }).then(data => {
+      // Handle the response from the server
+      console.log(data);
+    }).catch(error => {
+      // Handle any errors
+      console.error('Error:', error);
+      // Display an error message to the user
+      alert('An error occurred. Please try again.');
+    });
   });
 });

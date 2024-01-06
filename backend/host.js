@@ -38,7 +38,8 @@ app.post('/submit', (req, res) => {
   // Send a response to the client
   console.log("submit was called");
   console.log(req.body);
-  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments);
+  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments);
+  res.sendStatus(200);
 });
 
 // Start the server

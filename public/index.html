@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <h1>MN FRC Event CSA Support Request</h1>
+  <h1>MN FRC CSA Support Request</h1>
   <div class="toggle-container">
     <label class="toggle-label">
       <input type="checkbox" id="darkModeToggle">
@@ -24,6 +24,9 @@
 
     <label for="teamNumber">Team Number:</label>
     <input type="number" id="teamNumber" name="teamNumber" required>
+
+    <label for="contactEmail">Contact Email:</label>
+    <input type="email" id="contactEmail" name="contactEmail" required>
 
     <label for="event">Event:</label>
     <select id="event" name="event" required>
@@ -83,6 +86,10 @@
       <button id="createRequestButton" type="submit">Create Request</button>
     </div>
   </form>
+
+  <div id="success-message" style="display: none;">
+    Request Sent!
+  </div>
 
   <p class="work-in-progress" style="text-align: center;">Note: This page is a work in progress, the layout and content
     may change.<br><br>An additional

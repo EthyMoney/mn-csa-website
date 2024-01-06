@@ -15,14 +15,13 @@ const trelloLabels = config.trelloBoardLabels;
 
 
 // create a new card on the incoming list for the specified board based on event
-async function createCard(title, teamNumber, frcEvent, problemCategory, priority, description, attachments) {
+async function createCard(title, teamNumber, contactEmail, frcEvent, problemCategory, priority, description, attachments) {
   // find the id of the board we want to create the card on according to the selected event
   const trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
 
   // find the id of the "incoming" list on the board so we can create the card there
   const listId = await getIncomingListIdOfBoard(trelloId);
-  const formattedDescription = `**This is a submitted request that was added automatically**\n\nTeam Number: ${teamNumber}\n\nCategory: ${problemCategory}\n\nPriority: ${priority}\n\nDescription: ${description}`;
-
+  const formattedDescription = `**This is a submitted request that was added automatically**\n\nTeam Number: ${teamNumber}\n\nContact Email: ${contactEmail}\n\nCategory: ${problemCategory}\n\nPriority: ${priority}\n\nDescription: ${description}`;
   // lookup the IDs of the labels we want to add to the card based on the selected category and priority
   const problemCategoryLabelId = await getLabelIdByName(trelloId, problemCategory);
   const priorityLabelId = await getLabelIdByName(trelloId, priority);

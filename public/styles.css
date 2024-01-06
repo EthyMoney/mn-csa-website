@@ -152,6 +152,27 @@ button[type="submit"]:hover {
   margin-left: 10px;
 }
 
+/* Success popup */
+#success-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 2em;
+  z-index: 1000;
+  border: 2px solid white;
+  border-radius: 10px;
+  padding: 50px;
+  box-sizing: border-box;
+  max-width: 80%;
+  text-align: center;
+}
+
 
 /* Styling for phone screens */
 
