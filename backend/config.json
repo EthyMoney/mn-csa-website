@@ -1,24 +1,28 @@
 {
   "trelloBoards": [
     {
+      "frontendEventSelection": "Build Season",
+      "trelloId": "idy3xZJW"
+    },
+    {
       "frontendEventSelection": "Duluth - Northern Lights",
-      "trelloId": ""
+      "trelloId": "pm29P25h"
     },
     {
       "frontendEventSelection": "Duluth - Lake Superior",
-      "trelloId": ""
+      "trelloId": "5jzi7iPY"
     },
     {
       "frontendEventSelection": "10,000 Lakes",
-      "trelloId": ""
+      "trelloId": "ijkLQFUb"
     },
     {
       "frontendEventSelection": "Granite City",
-      "trelloId": ""
+      "trelloId": "y35B6h3q"
     },
     {
       "frontendEventSelection": "Great Northern",
-      "trelloId": ""
+      "trelloId": "w7CtTrwK"
     }
   ],
   "trelloBoardLabels": [

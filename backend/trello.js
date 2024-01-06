@@ -166,4 +166,13 @@ async function deleteAllLabelsOnBoard(trelloId) {
 }
 
 
-module.exports = { createCard, verifyLabels, deleteAllLabelsOnBoard };
+
+async function deleteAllLabelsOnAllBoards() {
+  for (const board of trelloBoards) {
+    const trelloId = board.trelloId;
+    await deleteAllLabelsOnBoard(trelloId);
+  }
+}
+
+
+module.exports = { createCard, verifyLabels, deleteAllLabelsOnBoard, deleteAllLabelsOnAllBoards };
