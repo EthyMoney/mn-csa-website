@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const problemCategory = document.getElementById('problemCategory').value;
     const description = document.getElementById('description').value;
     const attachments = document.getElementById('attachments').files;
+    const priority = document.getElementById('priority').value + " priority";
+
 
     // Construct Trello card object
     const card = {
@@ -48,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       teamNumber,
       frcEvent,
       problemCategory,
+      priority,
       description,
       attachments
     };

@@ -44,14 +44,12 @@ async function createCard(title, teamNumber, frcEvent, problemCategory, priority
   });
 
   if (res.ok) {
-    const resJson = await res.json();
-    console.log(resJson);
     console.log("Card created successfully");
   }
   else {
     console.log(`Error creating card on board ${trelloId} ---> ${res.status}: ${res.statusText}`);
     try {
-      const errorResponse = await createRes.json();
+      const errorResponse = await res.json();
       console.log('Error Details:', errorResponse);
     } catch (error) {
       console.error('Error parsing create label response:', error);
