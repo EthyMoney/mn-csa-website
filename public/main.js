@@ -44,46 +44,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const attachments = document.getElementById('attachments').files;
     const priority = document.getElementById('priority').value + " priority";
 
+    // Prepare attachments file data to send over json post
+    let filePromises = Array.from(attachments).map((file) => {
+      return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onload = function (event) {
+          // Remove 'data:*/*;base64,' metadata from the start of the string
+          let base64String = event.target.result.split('base64,')[1];
+          resolve({ name: file.name, data: base64String });
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    });
 
-    // Construct Trello card object
-    const card = {
-      title,
-      teamNumber,
-      contactEmail,
-      frcEvent,
-      problemCategory,
-      priority,
-      description,
-      attachments
-    };
+    Promise.all(filePromises).then((base64Files) => {
+      // Construct Trello card object
+      const card = {
+        title,
+        teamNumber,
+        contactEmail,
+        frcEvent,
+        problemCategory,
+        priority,
+        description,
+        attachments: base64Files
+      };
 
-    console.log('Card:', card)
+      console.log('Submitting card data:')
+      console.log({ ...card, attachments: card.attachments.length });
 
-    // Make an HTTP POST request to create a Trello card
-    fetch('/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(card)
-    }).then(response => {
-      response.json();
-      // Display a success message to the user
-      const successMessage = document.getElementById('success-message');
-      successMessage.style.display = 'flex';
-      setTimeout(() => {
-        successMessage.style.display = 'none';
-      }, 5000);
-      // Clear the form
-      document.getElementById('cardForm').reset();
-    }).then(data => {
-      // Handle the response from the server
-      console.log(data);
-    }).catch(error => {
-      // Handle any errors
-      console.error('Error:', error);
-      // Display an error message to the user
-      alert('An error occurred. Please try again.');
+      // Make an HTTP POST request to create a Trello card
+      fetch('/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(card)
+      }).then(response => {
+        response.json();
+        // Display a success message to the user
+        const successMessage = document.getElementById('success-message');
+        successMessage.style.display = 'flex';
+        setTimeout(() => {
+          successMessage.style.display = 'none';
+        }, 5000);
+        // Clear the form
+        document.getElementById('cardForm').reset();
+      }).then(data => {
+        // Handle the response from the server
+        if (data) console.log(data);
+      }).catch(error => {
+        // Handle any errors
+        console.error('Error:', error);
+        // Display an error message to the user
+        alert('An error occurred. Please try again.');
+      });
     });
   });
 });

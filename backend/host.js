@@ -1,5 +1,6 @@
 const express = require('express');
 const trelloManager = require('./trello.js');
+const path = require('path');
 
 const app = express();
 const port = 3000;
@@ -8,8 +9,8 @@ const port = 3000;
 app.disable('x-powered-by');
 
 // Middleware
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.static('public'));
+app.use(express.urlencoded({ limit: '200mb', extended: true })); // Parse URL-encoded bodies
+app.use(express.json({ limit: '200mb' }));
 
 // Configure parsing body as JSON (we need this or body will be empty)
 app.use(express.json());
@@ -20,26 +21,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-});
-
-// favicon.ico route
-// This route is required for the favicon in the browser tab
-app.get('/favicon.ico', (req, res) => {
-  res.sendFile(__dirname + '/public/favicon.ico');
-});
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.post('/submit', (req, res) => {
-  // Handle form submission and Trello card creation logic here
-  // Retrieve form data from req.body
-  // Create a new Trello card using the data
-  // Send a response to the client
-  console.log("submit was called");
-  console.log(req.body);
+  // Create a new Trello card using the data received from frontend form
+  console.log('Received card data:');
+  console.log({ ...req.body, attachments: req.body.attachments.length });
   trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments);
-  res.sendStatus(200);
+  res.status(200).send('Request received successfully!');
 });
 
 // Start the server

@@ -2,6 +2,8 @@
 // We will use the Trello API to create a new card based on the info submitted in the form.
 
 const config = require("./config.json");
+const fetch = require('node-fetch');
+const FormData = require('form-data');
 const trelloBoards = config.trelloBoards;
 const trelloLabels = config.trelloBoardLabels;
 
@@ -18,10 +20,9 @@ const trelloLabels = config.trelloBoardLabels;
 async function createCard(title, teamNumber, contactEmail, frcEvent, problemCategory, priority, description, attachments) {
   // find the id of the board we want to create the card on according to the selected event
   const trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
-
   // find the id of the "incoming" list on the board so we can create the card there
   const listId = await getIncomingListIdOfBoard(trelloId);
-  const formattedDescription = `**This is a submitted request that was added automatically**\n\nTeam Number: ${teamNumber}\n\nContact Email: ${contactEmail}\n\nCategory: ${problemCategory}\n\nPriority: ${priority}\n\nDescription: ${description}`;
+  const formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A TEAM REQUEST**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Description:** ${description}`;
   // lookup the IDs of the labels we want to add to the card based on the selected category and priority
   const problemCategoryLabelId = await getLabelIdByName(trelloId, problemCategory);
   const priorityLabelId = await getLabelIdByName(trelloId, priority);
@@ -44,6 +45,37 @@ async function createCard(title, teamNumber, contactEmail, frcEvent, problemCate
 
   if (res.ok) {
     console.log("Card created successfully");
+
+    // if we have attachments, add them to the card
+    if (attachments.length > 0) {
+      console.log("Adding attachments to card")
+      const card = await res.json();
+      for (const attachment of attachments) {
+        try {
+          const buffer = Buffer.from(attachment.data, 'base64');
+          const formData = new FormData();
+          formData.append('key', config.trelloAppKey);
+          formData.append('token', config.trelloUserToken);
+          formData.append('file', buffer, attachment.name);
+
+          const attachmentRes = await fetch(`https://api.trello.com/1/cards/${card.id}/attachments`, {
+            method: 'POST',
+            body: formData,
+            headers: formData.getHeaders()
+          });
+
+          if (!attachmentRes.ok) {
+            console.log(`Error adding attachment ${attachment.name} to card ${card.id} ---> ${attachmentRes.status}: ${attachmentRes.statusText}`);
+          }
+          else {
+            console.log(`Attachment ${attachment.name} added successfully`);
+          }
+        } catch (error) {
+          console.error(`Error processing attachment ${attachment.name}: ${error.message}`);
+        }
+      }
+      console.log("All attachments processed");
+    }
   }
   else {
     console.log(`Error creating card on board ${trelloId} ---> ${res.status}: ${res.statusText}`);
