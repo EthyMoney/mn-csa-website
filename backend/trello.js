@@ -1,12 +1,18 @@
 // This is where the backend logic to handle creating a new trello card will go. 
 // We will use the Trello API to create a new card based on the info submitted in the form.
 
-const config = require("./config.json");
+const config = require("../config/config.json");
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const trelloBoards = config.trelloBoards;
 const trelloLabels = config.trelloBoardLabels;
 
+// Check to see if the config file is valid (this will catch a docker user that forgot to fill this in)
+if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !config.trelloBoardLabels) {
+  console.error("Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board and label in the config file.\n" +
+    "If this is your first time running this app, please see the README for instructions on how to get your Trello app key and user token. These need to go in the config/config.json file.\n");
+  process.exit(1);
+}
 
 // Some terms to understand:
 // trelloId: This is the ID of the board or element instance as you see it in your browser URL bar when viewing the board. This is NOT the same as the board ID!

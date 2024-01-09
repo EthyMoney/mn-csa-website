@@ -1,0 +1,8 @@
+node_modules
+.vscode
+*.log
+.npmrc
+.jshintrc
+.eslintrc
+.gitignore
+.gitattributes
