@@ -25,7 +25,7 @@ Here's how to get started hosting your own version of this application using the
 docker run -d --name mn-csa-website -p 3000:3000 -v mn-csa-website:/usr/src/app/config:rw ultimate360/mn-csa-website
 ```
 
-3. You're not done yet! The container should start and then stop, this is expected because your config file is not filled in. You need to add your board IDs and Trello app key and token to the config file. You can get your Trello app key and token from [here](https://trello.com/power-ups/admin/). You can get your board trelloIds by going to each of your Trello boards and copying the URL in the address bar, it looks something like `ihy6gZJK`. Once you have these, add them to the `config.json` file which can be found in your mapped volume or mount point used in the command.
+3. You're not done yet! The container should start and then stop, this is expected because your config file is not filled in. You need to add your board IDs and Trello app key and token to the config file. You can get your Trello app key and user token from [here](https://trello.com/power-ups/admin/). You can get your board trello ID by going to each of your Trello boards and copying the ID from the URL in the address bar, it looks something like `ihy6gZJK`. Once you have these, add them to the `config.json` file which can be found in your mapped volume or mount point used in the command.
 
 4. Once you have your config file filled in, you can start the container again using the following command. The container should start and stay running this time. You will see output similar to the following if it starts successfully.
   
@@ -52,7 +52,7 @@ If you'd like to run the application without using Docker, you can do so by foll
 2. Install Node.js if you haven't already. You can find the installer for your operating system on the [Node.js website](https://nodejs.org/).
 3. Open a terminal and navigate to the directory where you cloned the repository.
 4. Run `npm install` to install the required dependencies.
-5. Now fill in your config file located in the `config` directory. You can get your Trello app key and token from [here](https://trello.com/power-ups/admin/). You can get your board trelloIds by going to each of your Trello boards and copying the URL in the address bar, it looks something like `ihy6gZJK`. Once you have these, add them to the `config.json` file.
+5. Now fill in your config file located in the `config` directory. You can get your Trello app key and user token from [here](https://trello.com/power-ups/admin/). You can get your board trello ID by going to each of your Trello boards and copying the ID from the URL in the address bar, it looks something like `ihy6gZJK`. Once you have these, add them to the `config.json` file.
 6. Run `npm start` to start the application. You should see output similar to what is shown in the Docker section above.
 7. That's it! You can now access your instance of the website by going to `http://localhost:3000` in your web browser. You can also access it from other devices on your network by replacing `localhost` with the IP address of the machine running the application.
 
