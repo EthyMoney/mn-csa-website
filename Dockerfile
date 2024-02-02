@@ -11,10 +11,10 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Replace the config file with the docker template file (prevents leaking your keys to the docker image, you're welcome)
-RUN mv config/config-docker-template.json config/config.json
+RUN mv config-template.json config/config.json
 
 # Install the production dependencies
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Expose port 3000 for API
 EXPOSE 3000

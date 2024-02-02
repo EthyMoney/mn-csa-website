@@ -1,4 +1,6 @@
 {
+  "trelloAppKey": "",
+  "trelloUserToken": "",
   "trelloBoards": [
     {
       "frontendEventSelection": "Build Season",
@@ -134,7 +136,5 @@
       "name": "Low Priority",
       "color": "green"
     }
-  ],
-  "trelloAppKey": "",
-  "trelloUserToken": ""
+  ]
 }

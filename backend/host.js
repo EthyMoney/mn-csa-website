@@ -1,3 +1,5 @@
+const preCheck = require('./pre-checks.js');
+preCheck();
 const express = require('express');
 const trelloManager = require('./trello.js');
 const path = require('path');
