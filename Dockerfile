@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Replace the config file with the docker template file (prevents leaking your keys to the docker image, you're welcome)
-RUN mv config-template.json config/config.json
+RUN cp config-template.json config/config.json
 
 # Install the production dependencies
 RUN npm ci --omit=dev
