@@ -106,7 +106,7 @@ button[type="submit"]:hover {
 .toggle-label {
   position: relative;
   display: inline-block;
-  width: 60px;
+  width: 80px;
   height: 34px;
 }
 
@@ -145,7 +145,7 @@ button[type="submit"]:hover {
 }
 
 .toggle-label input:checked+.toggle-slider:before {
-  transform: translateX(26px);
+  transform: translateX(46px);
 }
 
 .toggle-text {

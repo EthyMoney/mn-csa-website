@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('cardForm');
   const darkModeToggle = document.getElementById('darkModeToggle');
+  const darkModeToggleLabelText = document.getElementById('darkModeToggleLabelText');
 
   // Check if dark mode is enabled in local storage
   const isDarkModeEnabled = localStorage.getItem('darkModeEnabled') === 'true';
@@ -11,14 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
     darkModeToggle.checked = true;
   }
 
-  // Toggle dark mode when the toggle switch is clicked
-  darkModeToggle.addEventListener('change', () => {
+  // Toggle dark mode when the toggle switch or label text is clicked
+  darkModeToggle.addEventListener('change', themeToggle);
+  darkModeToggleLabelText.addEventListener('click', () => {
+    // trigger the change event on the checkbox
+    darkModeToggle.checked = !darkModeToggle.checked;
+    themeToggle();
+  });
+
+  function themeToggle() {
     console.log('Dark mode toggled')
     document.documentElement.classList.toggle('dark-mode');
     const isDarkModeEnabled = document.documentElement.classList.contains('dark-mode');
     console.log('Dark mode enabled:', isDarkModeEnabled)
     localStorage.setItem('darkModeEnabled', isDarkModeEnabled);
-  });
+  }
 
   // Hide the default "Choose.." option in the dropdowns since apple devices don't support the "hidden" attribute
   // This is also the window onload function, so if there's something else you want to do on load, add it here
@@ -38,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = document.getElementById('title').value;
     const teamNumber = document.getElementById('teamNumber').value;
     const contactEmail = document.getElementById('contactEmail').value;
+    const contactName = document.getElementById('contactName').value;
     const frcEvent = document.getElementById('event').value;
     const problemCategory = document.getElementById('problemCategory').value;
     const description = document.getElementById('description').value;
@@ -64,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title,
         teamNumber,
         contactEmail,
+        contactName,
         frcEvent,
         problemCategory,
         priority,

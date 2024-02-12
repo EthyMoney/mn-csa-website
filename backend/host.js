@@ -30,7 +30,7 @@ app.post('/submit', (req, res) => {
   // Create a new Trello card using the data received from frontend form
   console.log('Received card data:');
   console.log({ ...req.body, attachments: req.body.attachments.length });
-  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments);
+  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments);
   res.status(200).send('Request received successfully!');
 });
 
