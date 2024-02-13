@@ -228,11 +228,17 @@ button[type="submit"]:hover {
 
   #cardForm input[type="text"],
   #cardForm input[type="number"],
+  #cardForm input[type="email"],
+  #cardForm select,
   #cardForm textarea {
     margin-top: -5px;
     margin-bottom: 5px;
     width: 100%;
     /* Make form fields take up the full width of the form */
+  }
+
+  #contactName {
+    margin-bottom: -10px;
   }
 
   #cardForm select {
