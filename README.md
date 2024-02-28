@@ -1,7 +1,9 @@
 # MN FRC CSA Support Request Website
 
-What is a Control System Advisor (CSA)? A CSA is a volunteer at FIRST Robotics Competition events that helps teams with their robot's control system. They are the folks in the bright orange hats that are fairly easy to spot. Common things CSAs assist with include the RoboRIO, the radio, the driver station, the programming language, electronics, and just about anything else related to the robot. CSAs are there to help teams get their robot running and keep it running throughout the event. They are also there to help teams learn about their control system and how to use it. CSAs are a great resource for teams to use both at events and at home outside of events. This website is designed to help teams in FRC Northland get help from CSAs in a more efficient manner that can be easily tracked and managed.
+This website is designed to help teams in FRC Northland get help from CSAs in a more efficient manner that can be easily tracked and managed. This is used to track issues both during and even outside of competition events.
 
+### New to FRC or Not Sure What a CSA is?
+A Control System Advisor (CSA) is a volunteer at FIRST Robotics Competition events that helps teams with their robot's control system. They are the folks in the bright orange baseball caps that are really easy to spot. Common things CSAs assist with include the RoboRIO, the radio, the driver station, the programming language, electronics, and just about anything else related to running the robot. CSAs are there to help teams keep their robot running and playing on the field throughout the event so they can have the best possible experience. CSAs also help teams learn about their control system and how to work with and troubleshoot it. CSAs are a great resource for teams to use both at events and at home outside of events. The orange hats are your friend!
 
 ## Contents
 
