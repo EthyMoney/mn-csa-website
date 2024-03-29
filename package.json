@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/host.js",
+    "dev": "nodemon backend/host.js",
     "docker-build": "docker build -t ultimate360/mn-csa-website .",
     "docker-run": "docker run -d --name mn-csa-website -p 3000:3000 -v mn-csa-website:/usr/src/app/config:rw ultimate360/mn-csa-website",
     "docker-push": "docker push ultimate360/mn-csa-website"
@@ -15,8 +16,11 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "form-data": "^4.0.0",
     "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }
