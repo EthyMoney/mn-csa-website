@@ -7,10 +7,15 @@ A Control System Advisor (CSA) is a volunteer at FIRST Robotics Competition even
 
 ## Contents
 
-- [Running With Docker](#running-with-docker)
-- [Running Without Docker](#running-without-docker)
-- [Development](#development)
-- [Disclaimer](#disclaimer)
+- [MN FRC CSA Support Request Website](#mn-frc-csa-support-request-website)
+    - [New to FRC or Not Sure What a CSA is?](#new-to-frc-or-not-sure-what-a-csa-is)
+  - [Contents](#contents)
+  - [Running With Docker](#running-with-docker)
+  - [Running Without Docker](#running-without-docker)
+  - [Development](#development)
+    - [Important files and directories:](#important-files-and-directories)
+    - [Important Commands:](#important-commands)
+  - [Disclaimer](#disclaimer)
 
 ## Running With Docker
 
@@ -18,7 +23,7 @@ Here's how to get started hosting your own version of this application using the
 
 1. Ensure you have Docker installed on your machine. Install it if needed.
 2. Run the following command to install and start the container.
-   + Note that there is a volume mount for the config directory. This is where the application stores its config.json file.
+   + Note that there is a volume mount for the config directory. This is where the application stores its config and log files.
    + You can explicitly set your own directory for the config file mount if you'd like, just replace `mn-csa-website` before the semicolon with the absolute path to your desired directory.
    + If you are using Windows, I recommend leaving the mount the way it is to use Docker's volume mechanism to easily see the volume using Docker Desktop.
    + The container will run on port 3000 by default with a name of "mn-csa-website", but feel free to change these as desired.
