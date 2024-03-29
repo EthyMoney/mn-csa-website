@@ -1,6 +1,7 @@
 {
   "trelloAppKey": "",
   "trelloUserToken": "",
+  "appPort": 3000,
   "trelloBoards": [
     {
       "frontendEventSelection": "Build Season",
