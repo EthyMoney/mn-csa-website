@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('cardForm');
   const darkModeToggle = document.getElementById('darkModeToggle');
   const darkModeToggleLabelText = document.getElementById('darkModeToggleLabelText');
+  const submitButton = document.getElementById('createRequestButton');
 
   // Check if dark mode is enabled in local storage
   const isDarkModeEnabled = localStorage.getItem('darkModeEnabled') === 'true';
@@ -42,6 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
 
+    // Change submit button text to "Submitting..."
+    submitButton.innerText = "Submitting...";
+
+    // Prevent the button from being clicked multiple times
+    submitButton.disabled = true;
+
     // Retrieve form data
     const title = document.getElementById('title').value;
     const teamNumber = document.getElementById('teamNumber').value;
@@ -52,6 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const description = document.getElementById('description').value;
     const attachments = document.getElementById('attachments').files;
     const priority = document.getElementById('priority').value + " priority";
+
+    // If there are attachments, set button text to "Uploading..."
+    if (attachments.length > 0) {
+      submitButton.innerText = "Uploading...";
+    }
 
     // Prepare attachments file data to send over json post
     let filePromises = Array.from(attachments).map((file) => {
@@ -95,9 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
         response.json();
         // Display a success message to the user
         const successMessage = document.getElementById('success-message');
+        // Set the button text back to "Submit"
+        submitButton.innerText = "Submit";
         successMessage.style.display = 'flex';
         setTimeout(() => {
           successMessage.style.display = 'none';
+          // Re-enable the submit button
+          submitButton.disabled = false;
         }, 5000);
         // Clear the form
         document.getElementById('cardForm').reset();
