@@ -14,8 +14,8 @@ const port = config.appPort;
 app.disable('x-powered-by');
 
 // Middleware
-app.use(express.urlencoded({ limit: '200mb', extended: true })); // Parse URL-encoded bodies
-app.use(express.json({ limit: '200mb' }));
+app.use(express.urlencoded({ limit: '2000mb', extended: true })); // Parse URL-encoded bodies
+app.use(express.json({ limit: '2000mb' }));
 
 // Configure parsing body as JSON (we need this or body will be empty)
 app.use(express.json());
