@@ -9,12 +9,18 @@ function checkIt() {
   if (fs.existsSync(path.join(__dirname, '../config/config.json'))) {
     console.log("Config file found, verifying it..");
     // Make sure the at least contains the minimum required fields
-    const config = require(path.join(__dirname, "../config/config.json"));
+    let config = require(path.join(__dirname, "../config/config.json"));
     if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !config.trelloBoardLabels || !config.appPort || !Number.isInteger(config.appPort) || config.appPort < 1 || config.appPort > 65535) {
-      console.error("Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board (with trelloId) and label in the config file.\n" +
-        "Also, make sure you have specified a valid port number (1-65535) for appPort.\n" +
-        "If this is your first time running this app, please see the README for instructions on how to get your keys and IDs and how to set the config file.\n");
-      process.exit(1);
+      if (!config.appPort || !Number.isInteger(config.appPort) || config.appPort < 1 || config.appPort > 65535) {
+        config.appPort = 3000;
+        fs.writeFileSync(path.join(__dirname, "../config/config.json"), JSON.stringify(config, null, 2));
+        console.log("No valid appPort found in config file. Set to default port (3000) and updated config file.");
+      } else {
+        console.error("Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board (with trelloId) and label in the config file.\n" +
+          "Also, make sure you have specified a valid port number (1-65535) for appPort.\n" +
+          "If this is your first time running this app, please see the README for instructions on how to get your keys and IDs and how to set the config file.\n");
+        process.exit(1);
+      }
     } else {
       console.log("Config file looks good.");
     }
