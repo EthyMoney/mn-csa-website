@@ -19,7 +19,7 @@ ensureLogFileExists();
  * Writes a formatted message to the log file and optionally to the console.
  *
  * @param {string} message - The message to write to the log file.
- * @param {string} type - The type of the message (e.g., 'info', 'warning', 'error').
+ * @param {string} type - The type of the message (e.g., 'info', 'warn', 'error').
  * @param {string} sourceFile - The name of the file where the log message originated.
  * @param {string} sourceFunction - The name of the function where the log message originated.
  * @param {boolean} [toConsoleAlso=true] - Whether to also output the message to the console.
@@ -43,15 +43,12 @@ function writeToLogFile(message, type, sourceFile, sourceFunction, toConsoleAlso
   if (toConsoleAlso) {
     switch (type) {
       case 'info':
-      case 'inf':
         console.log(chalk.green(`${formattedDate} <INFO> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
         break;
-      case 'warning':
       case 'warn':
-        console.log(chalk.yellow(`${formattedDate} <WARNING> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
+        console.log(chalk.yellow(`${formattedDate} <WARN> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
         break;
       case 'error':
-      case 'err':
         console.log(chalk.red(`${formattedDate} <ERROR> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
         break;
       default:
