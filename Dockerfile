@@ -13,6 +13,9 @@ COPY . .
 # Replace the config file with the docker template file (prevents leaking your keys to the docker image, you're welcome)
 RUN cp config-template.json config/config.json
 
+# Delete the log file so it doesn't get included in the image and a fresh one gets created
+RUN rm -f config/backend.log
+
 # Install the production dependencies
 RUN npm ci --omit=dev
 
