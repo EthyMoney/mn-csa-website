@@ -4,13 +4,14 @@
 const config = require("../config/config.json");
 const fetch = require('node-fetch');
 const FormData = require('form-data');
+const { writeToLogFile } = require('./logger.js');
 const trelloBoards = config.trelloBoards;
 const trelloLabels = config.trelloBoardLabels;
 
 // Check to see if the config file is valid (this will catch a docker user that forgot to fill this in)
 if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !config.trelloBoardLabels) {
-  console.error("Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board and label in the config file.\n" +
-    "If this is your first time running this app, please see the README for instructions on how to get your Trello app key and user token. These need to go in the config/config.json file.\n");
+  writeToLogFile(`Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board and label in the config file.`, 'error', 'trello.js', 'configCheck');
+  writeToLogFile(`If this is your first time running this app, please see the README for instructions on how to get your Trello app key and user token. These need to go in the config/config.json file.`, 'error', 'trello.js', 'configCheck');
   process.exit(1);
 }
 
@@ -28,7 +29,7 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
   const trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
   // find the id of the "incoming" list on the board so we can create the card there
   const listId = await getIncomingListIdOfBoard(trelloId);
-  const formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM AN ONLINE SUBMITTED TEAM REQUEST**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
+  const formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
   // lookup the IDs of the labels we want to add to the card based on the selected category and priority
   const problemCategoryLabelId = await getLabelIdByName(trelloId, problemCategory);
   const priorityLabelId = await getLabelIdByName(trelloId, priority);
@@ -50,11 +51,11 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
   });
 
   if (res.ok) {
-    console.log("Card created successfully");
+    writeToLogFile(`Card created successfully`, 'info', 'trello.js', 'createCard');
 
     // if we have attachments, add them to the card
     if (attachments.length > 0) {
-      console.log("Adding attachments to card")
+      writeToLogFile(`Adding attachments to card`, 'info', 'trello.js', 'createCard');
       const card = await res.json();
       for (const attachment of attachments) {
         try {
@@ -71,25 +72,25 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
           });
 
           if (!attachmentRes.ok) {
-            console.log(`Error adding attachment ${attachment.name} to card ${card.id} ---> ${attachmentRes.status}: ${attachmentRes.statusText}`);
+            writeToLogFile(`Error adding attachment ${attachment.name} to card ${card.id} ---> ${attachmentRes.status}: ${attachmentRes.statusText}`, 'error', 'trello.js', 'createCard');
           }
           else {
-            console.log(`Attachment ${attachment.name} added successfully`);
+            writeToLogFile(`Attachment ${attachment.name} added successfully`, 'info', 'trello.js', 'createCard');
           }
         } catch (error) {
-          console.error(`Error processing attachment ${attachment.name}: ${error.message}`);
+          writeToLogFile(`Error processing attachment ${attachment.name}: ${error.message}`, 'error', 'trello.js', 'createCard');
         }
       }
-      console.log("All attachments processed");
+      writeToLogFile(`All attachments processed`, 'info', 'trello.js', 'createCard');
     }
   }
   else {
-    console.log(`Error creating card on board ${trelloId} ---> ${res.status}: ${res.statusText}`);
+    writeToLogFile(`Error creating card on board ${trelloId} ---> ${res.status}: ${res.statusText}`, 'error', 'trello.js', 'createCard');
     try {
       const errorResponse = await res.json();
-      console.log('Error Details:', errorResponse);
+      writeToLogFile(`Error Details: ${JSON.stringify(errorResponse)}`, 'error', 'trello.js', 'createCard');
     } catch (error) {
-      console.error('Error parsing create label response:', error);
+      writeToLogFile(`Error parsing create label response: ${error.message}`, 'error', 'trello.js', 'createCard');
     }
   }
 }
@@ -105,7 +106,7 @@ async function verifyLabels() {
     const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
     if (res.ok) {
       const resJson = await res.json();
-      console.log(`Found ${resJson.length} labels on board ${trelloId}`);
+      writeToLogFile(`Found ${resJson.length} labels on board ${trelloId}`, 'info', 'trello.js', 'verifyLabels');
       // iterate through each label in our local config
       for (const expectedLabel of trelloLabels) {
         // if we don't see our label on the board, create it
@@ -114,16 +115,16 @@ async function verifyLabels() {
             method: 'POST'
           });
           if (res.ok) {
-            console.log(`Created label ${expectedLabel.name} on board ${trelloId}`);
+            writeToLogFile(`Created label ${expectedLabel.name} on board ${trelloId}`, 'info', 'trello.js', 'verifyLabels');
           }
           else {
-            console.log(`Error creating label ${expectedLabel.name} on board ${trelloId} ---> ${res.status}: ${res.statusText}`)
+            writeToLogFile(`Error creating label ${expectedLabel.name} on board ${trelloId} ---> ${res.status}: ${res.statusText}`, 'error', 'trello.js', 'verifyLabels');
           }
         }
       }
     }
     else {
-      console.log(`Error getting labels on board ${trelloId}`);
+      writeToLogFile(`Error getting labels on board ${trelloId}`, 'error', 'trello.js', 'verifyLabels');
     }
   }
 }
@@ -178,7 +179,7 @@ async function getBoardIdByTrelloId(trelloId) {
 
 
 
-// nuke all labels on the board (start fresh) - make certain you intend to use this before calling it, it will wipe custom labels you added too!
+// nuke all labels on the provided board (start fresh) - make certain you intend to use this before calling it, it will wipe custom labels you added too!
 async function deleteAllLabelsOnBoard(trelloId) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
@@ -188,20 +189,20 @@ async function deleteAllLabelsOnBoard(trelloId) {
         method: 'DELETE'
       });
       if (res.ok) {
-        console.log(`Deleted label ${label.name} on board ${trelloId}`);
+        writeToLogFile(`Deleted label ${label.name} on board ${trelloId}`, 'info', 'trello.js', 'deleteAllLabelsOnBoard');
       }
       else {
-        console.log(`Error deleting label ${label.name} on board ${trelloId} ---> ${res.status}: ${res.statusText}`)
+        writeToLogFile(`Error deleting label ${label.name} on board ${trelloId} ---> ${res.status}: ${res.statusText}`, 'error', 'trello.js', 'deleteAllLabelsOnBoard');
       }
     }
   }
   else {
-    console.log(`Error getting labels on board ${trelloId}`);
+    writeToLogFile(`Error getting labels on board ${trelloId}`, 'error', 'trello.js', 'deleteAllLabelsOnBoard');
   }
 }
 
 
-
+// loop through ALL configured boards and delete ALL labels on each board (use with caution!)
 async function deleteAllLabelsOnAllBoards() {
   for (const board of trelloBoards) {
     const trelloId = board.trelloId;

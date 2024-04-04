@@ -23,7 +23,9 @@ app.use(express.json());
 // Log all requests
 app.use((req, res, next) => {
   if (req.path === '/') {
-    console.log(`${req.method} ${req.path} - Page load`);
+    writeToLogFile(`Server Interaction - PAGE LOADED: ${req.method} ${req.path}`, 'info', 'host.js', 'logging-middleware');
+    // log the user's device
+    writeToLogFile(`User Device: ${req.headers['user-agent']}`, 'info', 'host.js', 'logging-middleware');
     next();
     return;
   }
@@ -32,7 +34,9 @@ app.use((req, res, next) => {
     next();
     return;
   }
-  console.log(`${req.method} ${req.path}`);
+  writeToLogFile(`Server Interaction: ${req.method} ${req.path}`, 'info', 'host.js', 'logging-middleware');
+  // log the user's device
+  writeToLogFile(`User Device: ${req.headers['user-agent']}`, 'info', 'host.js', 'logging-middleware');
   next();
 });
 
@@ -41,9 +45,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.post('/submit', (req, res) => {
   // Create a new Trello card using the data received from frontend form
-  console.log('Received card data:');
+  console.log(chalk.green('Received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
-  writeToLogFile(`Received card data: ${JSON.stringify(req.body)}`, 'info', 'host.js', '/submit');
+  writeToLogFile(`Received card data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/submit', false);
   trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments);
   res.status(200).send('Request received successfully!');
 });
@@ -52,5 +56,5 @@ app.post('/submit', (req, res) => {
 app.listen(port, async () => {
   await trelloManager.verifyLabels();
   //await trelloManager.deleteAllLabelsOnAllBoards();
-  console.log(`Server is running on http://localhost:${port}`);
+  writeToLogFile(`Server is running on http://localhost:${port}`, 'info', 'host.js', 'app.listen');
 });

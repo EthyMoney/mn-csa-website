@@ -43,16 +43,19 @@ function writeToLogFile(message, type, sourceFile, sourceFunction, toConsoleAlso
   if (toConsoleAlso) {
     switch (type) {
       case 'info':
-        console.log(chalk.green(`${formattedDate} <INFO> (${sourceFile})[${sourceFunction}] - ${message}`));
+      case 'inf':
+        console.log(chalk.green(`${formattedDate} <INFO> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
         break;
       case 'warning':
-        console.log(chalk.yellow(`${formattedDate} <WARNING> (${sourceFile})[${sourceFunction}] - ${message}`));
+      case 'warn':
+        console.log(chalk.yellow(`${formattedDate} <WARNING> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
         break;
       case 'error':
-        console.log(chalk.red(`${formattedDate} <ERROR> (${sourceFile})[${sourceFunction}] - ${message}`));
+      case 'err':
+        console.log(chalk.red(`${formattedDate} <ERROR> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
         break;
       default:
-        console.log(`${formattedDate} <UNKNOWN> (${sourceFile})[${sourceFunction}] - ${message}`);
+        console.log(chalk.magenta(`${formattedDate} <UNKNOWN> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
     }
   }
 
@@ -109,8 +112,7 @@ function trimLogFile() {
     fileSizeString = `${(fileSizeInBytes / 1024).toFixed(2)} KB`;
   }
 
-  console.log(chalk.yellow(`Log file trim ran, ${chalk.cyan(trimmedEntriesCount)} entries were removed\n - There are now ${chalk.cyan(remainingEntriesCount)} entries, the oldest is from ${chalk.cyan(oldestEntryDate)}\n - The log file size is ${chalk.cyan(fileSizeString)}`));
-  writeToLogFile(`Log file trim ran, ${trimmedEntriesCount} entries were removed. There are now ${remainingEntriesCount} entries, the oldest is from ${oldestEntryDate}. The log file size is ${fileSizeString}`, 'info', 'logger.js', 'trimLogFile');
+  writeToLogFile(`Log file trim ran, ${trimmedEntriesCount} entries removed. Currently ${remainingEntriesCount} entries, oldest from ${oldestEntryDate}. File size ${fileSizeString}`, 'info', 'logger.js', 'trimLogFile');
 }
 
 
