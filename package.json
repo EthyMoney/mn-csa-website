@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/host.js",
     "dev": "nodemon backend/host.js",
+    "nuke-labels": "node backend/nuke-labels.js",
     "docker-build": "docker build -t ultimate360/mn-csa-website .",
     "docker-run": "docker run -d --name mn-csa-website -p 3000:3000 -v mn-csa-website:/usr/src/app/config:rw ultimate360/mn-csa-website",
     "docker-push": "docker push ultimate360/mn-csa-website"
