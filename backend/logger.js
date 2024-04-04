@@ -79,6 +79,9 @@ function trimLogFile() {
   const currentDate = new Date();
   const fiveDaysAgo = new Date(currentDate.setDate(currentDate.getDate() - logHistoryDays));
 
+  // Sanity check - if the first line is empty, remove it (messes with the date parsing and counts if it's there)
+  if (logFileArray[0] === '') logFileArray.shift();
+
   const newLogFileArray = [];
   let trimmedEntriesCount = 0;
 
