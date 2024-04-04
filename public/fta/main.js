@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("Welcome to the TEAM page!");
+  console.log("Welcome to the FTA page!");
   const form = document.getElementById('cardForm');
   const darkModeToggle = document.getElementById('darkModeToggle');
   const darkModeToggleLabelText = document.getElementById('darkModeToggleLabelText');
@@ -53,13 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Retrieve form data
     const title = document.getElementById('title').value;
     const teamNumber = document.getElementById('teamNumber').value;
-    const contactEmail = document.getElementById('contactEmail').value;
-    const contactName = document.getElementById('contactName').value;
     const frcEvent = document.getElementById('event').value;
-    const problemCategory = document.getElementById('problemCategory').value;
-    const description = document.getElementById('description').value;
-    const attachments = document.getElementById('attachments').files;
-    const priority = document.getElementById('priority').value + " priority";
+    const problemCategory = document.getElementById('problemCategory').value || "";
+    const description = document.getElementById('description').value || "";
+    const attachments = document.getElementById('attachments').files || "";
+    const priorityValue = document.getElementById('priority').value;
+    const priority = priorityValue ? priorityValue + " priority" : "";
+    const contactEmail = "";
+    const contactName = "FTA";
 
     // If there are attachments, set button text to "Uploading..."
     if (attachments.length > 0) {
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log({ ...card, attachments: card.attachments.length });
 
       // Make an HTTP POST request to create a Trello card
-      fetch('/submit', {
+      fetch('/fta/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

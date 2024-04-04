@@ -136,6 +136,10 @@
     {
       "name": "Low Priority",
       "color": "green"
+    },
+    {
+      "name": "FTA SUBMITTED",
+      "color": "blue"
     }
   ]
 }

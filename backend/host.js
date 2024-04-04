@@ -41,14 +41,15 @@ app.use((req, res, next) => {
 });
 
 // Serve static files from the public directory
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/', express.static(path.join(__dirname, '../public')));
+app.use('/fta', express.static(path.join(__dirname, '../public')));
 
-app.post('/submit', (req, res) => {
+app.post(['/submit', '/fta/submit'], (req, res) => {
   // Create a new Trello card using the data received from frontend form
   console.log(chalk.green('Received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`Received card data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/submit', false);
-  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments);
+  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, req.path === '/fta/submit');
   res.status(200).send('Request received successfully!');
 });
 

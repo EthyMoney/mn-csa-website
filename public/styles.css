@@ -72,6 +72,12 @@ button[type="submit"]:hover {
   text-align: center;
 }
 
+/* Make GitHub link text always appear blue and bold */
+a {
+  color: #007bff;
+  font-weight: bold;
+}
+
 /* Additional styles for dark mode */
 .light-mode {
   background-color: #f2f2f2;

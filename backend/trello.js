@@ -23,16 +23,55 @@ if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !
 //          This is is needed to make creation calls to the API, whereas we use the trelloId to lookup a boardId and some other items too, like getting labels.
 
 
-// create a new card on the incoming list for the specified board based on event
-async function createCard(title, teamNumber, contactEmail, contactName, frcEvent, problemCategory, priority, description, attachments) {
+/**
+ * Creates a new card on the incoming list for the specified board based on event.
+ *
+ * @async
+ * @function createCard
+ * @param {string} title - The title of the card.
+ * @param {number} teamNumber - The team number.
+ * @param {string} contactEmail - The contact email.
+ * @param {string} contactName - The contact name.
+ * @param {string} frcEvent - The FRC event.
+ * @param {string} problemCategory - The problem category.
+ * @param {string} priority - The priority.
+ * @param {string} description - The description.
+ * @param {Array} attachments - The attachments.
+ * @param {boolean} [ftaSubmission=false] - Indicates whether the card is a FTA submission.
+ * @returns {Promise<void>} Promise object represents the result of the fetch operation.
+ * @throws Will throw an error if the fetch operation fails.
+ */
+async function createCard(title, teamNumber, contactEmail, contactName, frcEvent, problemCategory, priority, description, attachments, ftaSubmission = false) {
   // find the id of the board we want to create the card on according to the selected event
   const trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
   // find the id of the "incoming" list on the board so we can create the card there
   const listId = await getIncomingListIdOfBoard(trelloId);
-  const formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
+
+  const formattedDescription =
+    (ftaSubmission)
+      ?
+      `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A FTA WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${description || 'none provided'}`
+      :
+      `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A TEAM WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
+
   // lookup the IDs of the labels we want to add to the card based on the selected category and priority
   const problemCategoryLabelId = await getLabelIdByName(trelloId, problemCategory);
   const priorityLabelId = await getLabelIdByName(trelloId, priority);
+  const ftaLabelId = await getLabelIdByName(trelloId, 'FTA SUBMITTED');
+  let labelIds = [];
+
+  // conditionally push problemCategoryLabelId and priorityLabelId and if they exist (might not since they are optional fields on the form for FTA submissions)
+  if (problemCategoryLabelId) {
+    labelIds.push(problemCategoryLabelId);
+  }
+  if (priorityLabelId) {
+    labelIds.push(priorityLabelId);
+  }
+
+  // if this is a FTA submission, add the FTA label
+  if (ftaSubmission && ftaLabelId) {
+    labelIds.push(ftaLabelId);
+  }
 
   // send the request to create the new card, it will be created at the top of the "incoming" list
   const res = await fetch(`https://api.trello.com/1/cards?key=${config.trelloAppKey}&token=${config.trelloUserToken}`, {
@@ -46,7 +85,7 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
       desc: formattedDescription,
       pos: 'top',
       start: new Date(),
-      idLabels: [problemCategoryLabelId, priorityLabelId]
+      idLabels: labelIds
     })
   });
 
@@ -97,7 +136,15 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
 
 
 
-// verify that our configured labels exist on all our configured boards, create them if they don't 
+/**
+ * Verifies that the configured labels exist on all configured boards. 
+ * If a label does not exist on a board, the function creates it.
+ *
+ * @async
+ * @function verifyLabels
+ * @returns {Promise<void>} Promise object represents the completion of label verification and creation.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 async function verifyLabels() {
   for (const board of trelloBoards) {
     const trelloId = board.trelloId;
@@ -131,7 +178,15 @@ async function verifyLabels() {
 
 
 
-// lookup and return the list ID of the "incoming" list on the specified board
+/**
+ * Looks up and returns the list ID of the "incoming" list on the specified board.
+ *
+ * @async
+ * @function getIncomingListIdOfBoard
+ * @param {string} trelloId - The ID of the Trello board.
+ * @returns {Promise<string>} Promise object represents the ID of the "incoming" list on the specified board.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 async function getIncomingListIdOfBoard(trelloId) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/lists?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
@@ -145,7 +200,16 @@ async function getIncomingListIdOfBoard(trelloId) {
 
 
 
-// lookup and return the ID of the label with the specified name on the specified board
+/**
+ * Looks up and returns the ID of the label with the specified name on the specified board.
+ *
+ * @async
+ * @function getLabelIdByName
+ * @param {string} trelloId - The ID of the Trello board.
+ * @param {string} labelName - The name of the label.
+ * @returns {Promise<string|null>} Promise object represents the ID of the label, or null if the label does not exist or the fetch operation fails.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 async function getLabelIdByName(trelloId, labelName) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
@@ -165,7 +229,15 @@ async function getLabelIdByName(trelloId, labelName) {
 
 
 
-// lookup and return the ID of the board with the specified trelloId (we need these for card and label creation calls)
+/**
+ * Looks up and returns the ID of the board with the specified Trello ID.
+ *
+ * @async
+ * @function getBoardIdByTrelloId
+ * @param {string} trelloId - The Trello ID of the board.
+ * @returns {Promise<string|undefined>} Promise object represents the ID of the board, or undefined if the fetch operation fails.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 async function getBoardIdByTrelloId(trelloId) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
@@ -179,7 +251,15 @@ async function getBoardIdByTrelloId(trelloId) {
 
 
 
-// nuke all labels on the provided board (start fresh) - make certain you intend to use this before calling it, it will wipe custom labels you added too!
+/**
+ * Deletes all labels on the specified board. Be careful when using this function as it will also delete custom labels.
+ *
+ * @async
+ * @function deleteAllLabelsOnBoard
+ * @param {string} trelloId - The ID of the Trello board.
+ * @returns {Promise<void>} Promise object represents the completion of the delete operation.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 async function deleteAllLabelsOnBoard(trelloId) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
@@ -202,7 +282,15 @@ async function deleteAllLabelsOnBoard(trelloId) {
 }
 
 
-// loop through ALL configured boards and delete ALL labels on each board (use with caution!)
+
+/**
+ * Deletes all labels on all configured boards. Use this function with caution as it will also delete custom labels.
+ *
+ * @async
+ * @function deleteAllLabelsOnAllBoards
+ * @returns {Promise<void>} Promise object represents the completion of the delete operation.
+ * @throws Will throw an error if the fetch operation fails.
+ */
 async function deleteAllLabelsOnAllBoards() {
   for (const board of trelloBoards) {
     const trelloId = board.trelloId;
