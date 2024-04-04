@@ -13,8 +13,8 @@ A Control System Advisor (CSA) is a volunteer at FIRST Robotics Competition even
   - [Running With Docker](#running-with-docker)
   - [Running Without Docker](#running-without-docker)
   - [Development](#development)
-    - [Important files and directories:](#important-files-and-directories)
-    - [Important Commands:](#important-commands)
+    - [Important files and directories](#important-files-and-directories)
+    - [Important Commands](#important-commands)
   - [Disclaimer](#disclaimer)
 
 ## Running With Docker
@@ -34,22 +34,23 @@ docker run -d --name mn-csa-website -p 3000:3000 -v mn-csa-website:/usr/src/app/
 
 3. You're not done yet! The container should start and then stop, this is expected because your config file is not filled in. You need to add your board IDs and Trello app key and token to the config file. You can get your Trello app key and user token from [here](https://trello.com/power-ups/admin/). You can get your board trello ID by going to each of your Trello boards and copying the ID from the URL in the address bar, it looks something like `ihy6gZJK`. Once you have these, add them to the `config.json` file which can be found in your mapped volume or mount point used in the command.
 
-4. Once you have your config file filled in, you can start the container again using the following command. The container should start and stay running this time. You will see output similar to the following if it starts successfully.
+4. Once you have your config file filled in, you can start the container again using the following command. The container should start and stay running this time. You will see output similar to the following if it starts successfully. Log entries will be written to a log file in the same directory as the config file so you can see what's happening behind the scenes and debug any issues that may arise.
   
 ```bash
-Config file found.
-Config file looks good.
-Pre-checks complete.
-Found 27 labels on board xxxxxxxx
-Found 27 labels on board xxxxxxxx
-Found 27 labels on board xxxxxxxx
-Found 27 labels on board xxxxxxxx
-Found 27 labels on board xxxxxxxx
-Found 27 labels on board xxxxxxxx
-Server is running on http://localhost:3000
+4/4/2024 3:01:32 PM <INFO> (pre-checks.js)[checkIt] - Config file found, verifying it..
+4/4/2024 3:01:32 PM <INFO> (pre-checks.js)[checkIt] - Config file looks good.
+4/4/2024 3:01:32 PM <INFO> (pre-checks.js)[checkIt] - Pre-checks complete.
+4/4/2024 3:01:32 PM <INFO> (logger.js)[trimLogFile] - Log file trim ran, 0 entries removed. Currently 794 entries, oldest from 4/4/2024. File size 81.68 KB
+4/4/2024 3:01:33 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
+4/4/2024 3:01:33 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
+4/4/2024 3:01:33 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
+4/4/2024 3:01:34 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
+4/4/2024 3:01:34 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
+4/4/2024 3:01:34 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
+4/4/2024 3:01:34 PM <INFO> (host.js)[app.listen] - Server is running on http://localhost:3000
 ```
 
-5. That's it! You can now access your instance of the website by going to `http://localhost:3000` in your web browser. You can also access it from other devices on your network by replacing `localhost` with the IP address of the machine running the container.
+5. That's it! You can now access your instance of the website by going to `http://localhost:3000` (or `http://localhost:3000/fta` for the FTA version) in your web browser. You can also access it from other devices on your network by replacing `localhost` with the IP address of the machine running the container.
 
 ## Running Without Docker
 
@@ -61,7 +62,7 @@ If you'd like to run the application without using Docker, you can do so by foll
 4. Run `npm install` to install the required dependencies.
 5. Now fill in your config file located in the `config` directory. You can get your Trello app key and user token from [here](https://trello.com/power-ups/admin/). You can get your board trello ID by going to each of your Trello boards and copying the ID from the URL in the address bar, it looks something like `ihy6gZJK`. Once you have these, add them to the `config.json` file.
 6. Run `npm start` to start the application. You should see output similar to what is shown in the Docker section above.
-7. That's it! You can now access your instance of the website by going to `http://localhost:3000` in your web browser. You can also access it from other devices on your network by replacing `localhost` with the IP address of the machine running the application.
+7. That's it! You can now access your instance of the website by going to `http://localhost:3000` (or `http://localhost:3000/fta` for the FTA version) in your web browser. You can also access it from other devices on your network by replacing `localhost` with the IP address of the machine running the application. Log entries will be written to a log file in the `config` directory so you can see what's happening behind the scenes and debug any issues that may arise.
 
 ## Development
 
@@ -69,9 +70,11 @@ So you want to contribute to the project or tweak things yourself? Great! Here's
 
 First, go ahead and follow the same steps as above in the "Running Without Docker" section to get the application configured and running on your machine. Once you have it running, you can make changes to the code and restart the app to see them reflected in the application.
 
-### Important files and directories:
+### Important files and directories
 
 - `config/config.json` - This is where you will put your Trello app key and token, as well as the Trello IDs of the boards you want to use with the application. You can also customize, add, or remove labels from this file as you wish. Just be careful to make sure that colors you select are available as colors in the Trello REST API.
+
+- `config/backend.log` - This is the log file that the application creates and writes to as it does its thing. It contains organized messages from the application that can help with debugging and tracking what's happening behind the scenes. It's trimmed automatically to keep it from getting too large over time. Managed by `backend/logger.js`.
 
 - `backend/host.js` - This is the entry point of the application when running and it's where an express server lives. This express server serves the frontend and has endpoints to handle interactions with the frontend (like getting the data of the form when it's submitted).
 
@@ -81,7 +84,9 @@ First, go ahead and follow the same steps as above in the "Running Without Docke
 
 - `public/` - This directory contains the frontend portion of the application. It's where the HTML, CSS, and client-side JavaScript live. You can make changes to the frontend here and see them reflected in the application when you restart it.
 
-### Important Commands:
+- `public/fta/` - This directory contains the FTA page of the application. It's where the HTML, CSS, and client-side JavaScript live for the FTA page. You can make changes to the frontend here and see them reflected in the application when you restart it. Note that this version is essentially a cut down version of the main version so that FTAs can enter just the essential information needed to get help and do so quickly.
+
+### Important Commands
 
 For your convenience I added some NPM scripts to the package.json to make some dev tasks a little easier and more streamlined. Here's what's available:
 
@@ -92,6 +97,8 @@ For your convenience I added some NPM scripts to the package.json to make some d
 - `npm run docker-push` - This command will push the docker image to the repository you specify. Use your own image and repository name you specified when building the image.
 
 - `npm run docker-run` - This command will locally run the docker image you just built. Use your own image and repository name you specified when building the image.
+
+- `npm run nuke-labels` - This command will remove all labels from all configured Trello boards. Be careful with this one, it's irreversible! This can be handy to clean up labels that are no longer needed or to start fresh on your boards so your labels match the config file. Heads up, it deletes ALL labels, even ones not created by the application.
 
 ## Disclaimer
 
