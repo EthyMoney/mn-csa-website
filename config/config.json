@@ -86,7 +86,7 @@
       "color": "red"
     },
     {
-      "name": "Electronic - incompatible components",
+      "name": "Electronic - Incompatible Components",
       "color": "red"
     },
     {
@@ -102,7 +102,11 @@
       "color": "black"
     },
     {
-      "name": "Field - roboRIO reboot",
+      "name": "Field - roboRIO Reboot",
+      "color": "black"
+    },
+    {
+      "name": "Field - Radio Reboot",
       "color": "black"
     },
     {

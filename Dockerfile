@@ -1,5 +1,5 @@
-# Base image for nodejs (LTS)
-FROM node:lts
+# Base image for nodejs (Current)
+FROM node:current
 
 # Set the shell to bash
 SHELL ["/bin/bash", "-c"]
