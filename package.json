@@ -17,7 +17,9 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
+    "express-validator": "^7.0.1",
     "form-data": "^4.0.0",
     "node-fetch": "^2.7.0"
   },

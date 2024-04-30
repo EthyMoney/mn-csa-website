@@ -214,7 +214,7 @@ async function getLabelIdByName(trelloId, labelName) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
     const resJson = await res.json();
-    const label = resJson.find(label => label.name.toLowerCase() === labelName.toLowerCase());
+    const label = resJson.find(label => label.name?.toLowerCase() === labelName?.toLowerCase());
     if (label) {
       return label.id;
     }

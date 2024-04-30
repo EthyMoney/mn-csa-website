@@ -1,6 +1,7 @@
 {
   "trelloAppKey": "",
   "trelloUserToken": "",
+  "apiKey": "",
   "appPort": 3000,
   "trelloBoards": [
     {
