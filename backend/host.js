@@ -15,12 +15,33 @@ const port = config.appPort;
 // Disable x-powered-by header (hides that express is being used)
 app.disable('x-powered-by');
 
+// Log the raw request body
+app.use((req, res, next) => {
+  let data = '';
+  req.on('data', chunk => {
+    data += chunk;
+  });
+  req.on('end', () => {
+    if (data) {
+      console.log('Raw incoming request body:', data);
+    }
+  });
+  next();
+});
+
 // Middleware
 app.use(express.urlencoded({ limit: '2000mb', extended: true })); // Parse URL-encoded bodies
-app.use(express.json({ limit: '2000mb' }));
+app.use(express.json({ limit: '2000mb' })); // Configure parsing body as JSON (we need this or body will be empty)
 
-// Configure parsing body as JSON (we need this or body will be empty)
-app.use(express.json());
+// JSON parsing error handling middleware
+app.use(function (err, req, res, next) {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error(err);
+    res.status(400).send({ message: 'Invalid JSON syntax in request body.' });
+  } else {
+    next();
+  }
+});
 
 // Configure CORS to only allow requests from the frontend website (used for frontend form submission, API is key protected)
 const corsOptions = {
@@ -82,8 +103,12 @@ app.post(['/submit', '/fta/submit'], cors(corsOptions), [
   console.log(chalk.green('Received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`Received card data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/submit', false);
-  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, req.path === '/fta/submit');
-  res.status(200).send('Request received successfully!');
+  trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, req.path === '/fta/submit').then(() => {
+    res.status(200).send('Request received successfully!');
+  }).catch((err) => {
+    console.error(err);
+    res.status(500).send('An error occurred while processing the request. Details: ' + err.message);
+  });
 });
 
 
@@ -106,8 +131,12 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
   console.log(chalk.green('API Key validated, received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`API Card Data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/api/create', false);
-  trelloManager.createCard(req.body.title, req.body.teamNumber, "", "FTA", req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true);
-  res.status(200).send('API Request received successfully!');
+  trelloManager.createCard(req.body.title, req.body.teamNumber, "", "FTA", req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true).then(() => {
+    res.status(200).send('API Request received successfully!');
+  }).catch((err) => {
+    console.error(err);
+    res.status(500).send('An error occurred while processing the request. Details: ' + err.message);
+  });
 });
 
 

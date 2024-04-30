@@ -43,7 +43,13 @@ if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !
  */
 async function createCard(title, teamNumber, contactEmail, contactName, frcEvent, problemCategory, priority, description, attachments, ftaSubmission = false) {
   // find the id of the board we want to create the card on according to the selected event
-  const trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
+  let trelloId;
+  try {
+    trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
+  } catch (error) {
+    writeToLogFile(`Error finding trelloId for board with event "${frcEvent}"`, 'error', 'trello.js', 'createCard');
+    throw new Error(`Error finding trelloId for board with event "${frcEvent}". Did you provide a valid event?`);
+  }
   // find the id of the "incoming" list on the board so we can create the card there
   const listId = await getIncomingListIdOfBoard(trelloId);
 
