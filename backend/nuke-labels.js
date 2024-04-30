@@ -16,16 +16,16 @@ const rl = readline.createInterface({
 
 // Wait a moment to allow the logging module to initialize and finish its trim operation
 setTimeout(() => {
-  writeToLogFile(`Prompting user to confirm deletion of all labels on all boards`, 'info', 'nuke-labels.js', 'rl-prompt');
+  writeToLogFile('Prompting user to confirm deletion of all labels on all boards', 'info', 'nuke-labels.js', 'rl-prompt');
   rl.question(chalk.yellow('\n\nAre you sure you want to delete all labels on all boards?\nThis is a destructive action and will remove all labels, including any you have created yourself.\n(yes/no): '), async (answer) => {
     if (answer.toLowerCase() === 'yes' || answer.toLowerCase() === 'y') {
       await trelloManager.deleteAllLabelsOnAllBoards();
-      writeToLogFile(`All labels on all boards have been deleted.`, 'info', 'nuke-labels.js', 'rl-prompt');
+      writeToLogFile('All labels on all boards have been deleted.', 'info', 'nuke-labels.js', 'rl-prompt');
     } else {
-      writeToLogFile(`User chose not to delete all labels on all boards.`, 'info', 'nuke-labels.js', 'rl-prompt');
+      writeToLogFile('User chose not to delete all labels on all boards.', 'info', 'nuke-labels.js', 'rl-prompt');
     }
     rl.close();
-    writeToLogFile(`End of action, exiting now.`, 'info', 'nuke-labels.js', 'rl-prompt');
+    writeToLogFile('End of action, exiting now.', 'info', 'nuke-labels.js', 'rl-prompt');
     process.exit(0);
   });
 }, 2000);

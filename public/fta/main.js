@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("Welcome to the FTA page!");
+  console.log('Welcome to the FTA page!');
   const form = document.getElementById('cardForm');
   const darkModeToggle = document.getElementById('darkModeToggle');
   const darkModeToggleLabelText = document.getElementById('darkModeToggleLabelText');
@@ -23,10 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function themeToggle() {
-    console.log('Dark mode toggled')
+    console.log('Dark mode toggled');
     document.documentElement.classList.toggle('dark-mode');
     const isDarkModeEnabled = document.documentElement.classList.contains('dark-mode');
-    console.log('Dark mode enabled:', isDarkModeEnabled)
+    console.log('Dark mode enabled:', isDarkModeEnabled);
     localStorage.setItem('darkModeEnabled', isDarkModeEnabled);
   }
 
@@ -39,13 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
         this.querySelector('option[value=""]').disabled = true;
       });
     });
-  }
+  };
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     // Change submit button text to "Submitting..."
-    submitButton.innerText = "Submitting...";
+    submitButton.innerText = 'Submitting...';
 
     // Prevent the button from being clicked multiple times
     submitButton.disabled = true;
@@ -54,17 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = document.getElementById('title').value;
     const teamNumber = document.getElementById('teamNumber').value;
     const frcEvent = document.getElementById('event').value;
-    const problemCategory = document.getElementById('problemCategory').value || "";
-    const description = document.getElementById('description').value || "";
-    const attachments = document.getElementById('attachments').files || "";
+    const problemCategory = document.getElementById('problemCategory').value || '';
+    const description = document.getElementById('description').value || '';
+    const attachments = document.getElementById('attachments').files || '';
     const priorityValue = document.getElementById('priority').value;
-    const priority = priorityValue ? priorityValue + " priority" : "";
-    const contactEmail = "";
-    const contactName = "FTA";
+    const priority = priorityValue ? priorityValue + ' priority' : '';
+    const contactEmail = '';
+    const contactName = 'FTA';
 
     // If there are attachments, set button text to "Uploading..."
     if (attachments.length > 0) {
-      submitButton.innerText = "Uploading...";
+      submitButton.innerText = 'Uploading...';
     }
 
     // Prepare attachments file data to send over json post
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         attachments: base64Files
       };
 
-      console.log('Submitting card data:')
+      console.log('Submitting card data:');
       console.log({ ...card, attachments: card.attachments.length });
 
       // Make an HTTP POST request to create a Trello card
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Display a success message to the user
         const successMessage = document.getElementById('success-message');
         // Set the button text back to "Submit"
-        submitButton.innerText = "Submit";
+        submitButton.innerText = 'Submit';
         successMessage.style.display = 'flex';
         setTimeout(() => {
           successMessage.style.display = 'none';

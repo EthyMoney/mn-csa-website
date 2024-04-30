@@ -1,7 +1,7 @@
 // This is where the backend logic to handle creating a new trello card will go. 
 // We will use the Trello API to create a new card based on the info submitted in the form.
 
-const config = require("../config/config.json");
+const config = require('../config/config.json');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const { writeToLogFile } = require('./logger.js');
@@ -10,8 +10,8 @@ const trelloLabels = config.trelloBoardLabels;
 
 // Check to see if the config file is valid (this will catch a docker user that forgot to fill this in)
 if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !config.trelloBoardLabels) {
-  writeToLogFile(`Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board and label in the config file.`, 'error', 'trello.js', 'configCheck');
-  writeToLogFile(`If this is your first time running this app, please see the README for instructions on how to get your Trello app key and user token. These need to go in the config/config.json file.`, 'error', 'trello.js', 'configCheck');
+  writeToLogFile('Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board and label in the config file.', 'error', 'trello.js', 'configCheck');
+  writeToLogFile('If this is your first time running this app, please see the README for instructions on how to get your Trello app key and user token. These need to go in the config/config.json file.', 'error', 'trello.js', 'configCheck');
   process.exit(1);
 }
 
@@ -87,7 +87,7 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
     },
     body: JSON.stringify({
       idList: listId,
-      name: teamNumber + ": " + title,
+      name: teamNumber + ': ' + title,
       desc: formattedDescription,
       pos: 'top',
       start: new Date(),
@@ -96,11 +96,11 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
   });
 
   if (res.ok) {
-    writeToLogFile(`Card created successfully`, 'info', 'trello.js', 'createCard');
+    writeToLogFile('Card created successfully', 'info', 'trello.js', 'createCard');
 
     // if we have attachments, add them to the card
     if (attachments.length > 0) {
-      writeToLogFile(`Adding attachments to card`, 'info', 'trello.js', 'createCard');
+      writeToLogFile('Adding attachments to card', 'info', 'trello.js', 'createCard');
       const card = await res.json();
       for (const attachment of attachments) {
         try {
@@ -126,7 +126,7 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
           writeToLogFile(`Error processing attachment ${attachment.name}: ${error.message}`, 'error', 'trello.js', 'createCard');
         }
       }
-      writeToLogFile(`All attachments processed`, 'info', 'trello.js', 'createCard');
+      writeToLogFile('All attachments processed', 'info', 'trello.js', 'createCard');
     }
   }
   else {
@@ -197,7 +197,7 @@ async function getIncomingListIdOfBoard(trelloId) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/lists?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
     const resJson = await res.json();
-    return resJson.find(list => list.name.toLowerCase() === "incoming").id;
+    return resJson.find(list => list.name.toLowerCase() === 'incoming').id;
   }
   else {
     return;

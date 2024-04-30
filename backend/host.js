@@ -1,6 +1,6 @@
 const preCheck = require('./pre-checks.js');
 preCheck();
-const config = require("../config/config.json");
+const config = require('../config/config.json');
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
@@ -131,7 +131,7 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
   console.log(chalk.green('API Key validated, received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`API Card Data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/api/create', false);
-  trelloManager.createCard(req.body.title, req.body.teamNumber, "", "FTA", req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true).then(() => {
+  trelloManager.createCard(req.body.title, req.body.teamNumber, '', 'FTA', req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true).then(() => {
     res.status(200).send('API Request received successfully!');
   }).catch((err) => {
     console.error(err);
