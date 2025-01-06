@@ -1,5 +1,5 @@
-# Base image for nodejs (Current)
-FROM node:current
+# Base image for nodejs (jod, which is v22 LTS)
+FROM node:jod
 
 # Set the shell to bash
 SHELL ["/bin/bash", "-c"]
