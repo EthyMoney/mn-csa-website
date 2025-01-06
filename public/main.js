@@ -39,6 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
         this.querySelector('option[value=""]').disabled = true;
       });
     });
+
+    // Collect and display the version number of the app on the version-number div
+    fetch('/version').then((response) => {
+      return response.json();
+    }).then((data) => {
+      const versionNumber = data.version;
+      document.getElementById('version-number').innerText = 'v' + versionNumber;
+    });
   };
 
   form.addEventListener('submit', (event) => {

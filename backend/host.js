@@ -2,11 +2,13 @@ const preCheck = require('./pre-checks.js');
 preCheck();
 const config = require('../config/config.json');
 const express = require('express');
+const helmet = require('helmet');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
 const trelloManager = require('./trello.js');
 const chalk = require('chalk');
 const path = require('path');
+const packageJson = require('../package.json');
 const { writeToLogFile } = require('./logger.js');
 
 const app = express();
@@ -14,6 +16,9 @@ const port = config.appPort;
 
 // Disable x-powered-by header (hides that express is being used)
 app.disable('x-powered-by');
+
+// Use helmet to secure the app by setting various HTTP headers
+app.use(helmet());
 
 // Log the raw request body
 app.use((req, res, next) => {
@@ -137,6 +142,12 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
     console.error(err);
     res.status(500).send('An error occurred while processing the request. Details: ' + err.message);
   });
+});
+
+
+// Endpoint for getting the app version from package.json
+app.get('/version', (req, res) => {
+  res.status(200).json({ version: packageJson.version });
 });
 
 
