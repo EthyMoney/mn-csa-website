@@ -23,7 +23,7 @@ RUN npm ci --omit=dev
 EXPOSE 3000
 
 # Set the node environment to production
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Define the app run command
 CMD [ "npm", "start" ]
