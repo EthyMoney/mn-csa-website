@@ -62,11 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = document.getElementById('title').value;
     const teamNumber = document.getElementById('teamNumber').value;
     const frcEvent = document.getElementById('event').value;
-    const problemCategory = document.getElementById('problemCategory').value || '';
-    const description = document.getElementById('description').value || '';
+    const problemCategory = document.getElementById('problemCategory').value || 'na';
+    const description = document.getElementById('description').value || 'na';
     const attachments = document.getElementById('attachments').files || '';
     const priorityValue = document.getElementById('priority').value;
-    const priority = priorityValue ? priorityValue + ' priority' : '';
+    const priority = priorityValue ? priorityValue + ' priority' : 'na';
     const contactEmail = '';
     const contactName = 'FTA';
 

@@ -49,8 +49,19 @@ app.use(function (err, req, res, next) {
 });
 
 // Configure CORS to only allow requests from the frontend website (used for frontend form submission, API is key protected)
+const allowedOrigins = [
+  'https://support.mnfrccsa.com', // Production URL
+  `http://localhost:${port}`, // Localhost for development
+];
+
 const corsOptions = {
-  origin: 'https://support.mnfrccsa.com',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   optionsSuccessStatus: 200
 };
 
@@ -88,7 +99,7 @@ const apiKeyMiddleware = (req, res, next) => {
 };
 
 // Endpoint for submitting a Trello card (CORS protected, only allows requests from the frontend interface)
-app.post(['/submit', '/fta/submit'], cors(corsOptions), [
+app.post(['/submit'], cors(corsOptions), [
   body('title').trim().isLength({ min: 1 }).withMessage('Title must not be empty'),
   body('teamNumber').isNumeric().withMessage('Team number must be a number'),
   body('contactEmail').isEmail().withMessage('Must be a valid email address').normalizeEmail(),
@@ -102,6 +113,9 @@ app.post(['/submit', '/fta/submit'], cors(corsOptions), [
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log(chalk.red('Validation errors:'));
+    console.log(errors.array());
+    writeToLogFile(`Validation errors: ${JSON.stringify(errors.array())}`, 'error', 'host.js', '/submit', false);
     return res.status(400).json({ errors: errors.array() });
   }
 
@@ -110,6 +124,37 @@ app.post(['/submit', '/fta/submit'], cors(corsOptions), [
   writeToLogFile(`Received card data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/submit', false);
   trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, req.path === '/fta/submit').then(() => {
     res.status(200).send('Request received successfully!');
+  }).catch((err) => {
+    console.error(err);
+    res.status(500).send('An error occurred while processing the request. Details: ' + err.message);
+  });
+});
+
+
+// External API endpoint for creating a Trello card (CORS protected, only allows requests from the frontend interface, FTA page only!)
+app.post(['/fta/submit'], cors(corsOptions), [
+  body('title').trim().isLength({ min: 1 }).withMessage('Title must not be empty'),
+  body('teamNumber').isNumeric().withMessage('Team number must be a number'),
+  body('frcEvent').trim().isLength({ min: 1 }).withMessage('Event must not be empty'),
+  body('problemCategory').optional().trim().isLength({ min: 1 }).withMessage('Problem category must not be empty').escape(),
+  body('description').optional().trim().escape(),  // Description is optional and can be empty
+  body('priority').optional().trim().isLength({ min: 1 }).withMessage('Priority must not be empty').escape(),
+  body('attachments.*.name').optional().isString().withMessage('Attachment names must be strings'),
+  body('attachments.*.data').optional().isString().withMessage('Attachment data must be a base64 string'),
+], (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(chalk.red('Validation errors:'));
+    console.log(errors.array());
+    writeToLogFile(`Validation errors: ${JSON.stringify(errors.array())}`, 'error', 'host.js', '/fta/submit', false);
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  console.log(chalk.green('API Key validated, received card data:'));
+  console.log({ ...req.body, attachments: req.body.attachments.length });
+  writeToLogFile(`API Card Data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/api/create', false);
+  trelloManager.createCard(req.body.title, req.body.teamNumber, '', 'FTA', req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true).then(() => {
+    res.status(200).send('API Request received successfully!');
   }).catch((err) => {
     console.error(err);
     res.status(500).send('An error occurred while processing the request. Details: ' + err.message);
@@ -130,6 +175,9 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log(chalk.red('Validation errors:'));
+    console.log(errors.array());
+    writeToLogFile(`Validation errors: ${JSON.stringify(errors.array())}`, 'error', 'host.js', '/api/create', false);
     return res.status(400).json({ errors: errors.array() });
   }
 

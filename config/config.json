@@ -27,6 +27,14 @@
     {
       "frontendEventSelection": "Great Northern",
       "trelloId": ""
+    },
+    {
+      "frontendEventSelection": "North Star",
+      "trelloId": ""
+    },
+    {
+      "frontendEventSelection": "State",
+      "trelloId": ""
     }
   ],
   "trelloBoardLabels": [

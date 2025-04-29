@@ -31,6 +31,10 @@
     {
       "frontendEventSelection": "North Star",
       "trelloId": ""
+    },
+    {
+      "frontendEventSelection": "State",
+      "trelloId": ""
     }
   ],
   "trelloBoardLabels": [
