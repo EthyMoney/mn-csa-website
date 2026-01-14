@@ -6,8 +6,8 @@ const helmet = require('helmet');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
 const trelloManager = require('./trello.js');
-const chalk = require('chalk');
 const path = require('path');
+const pc = require('picocolors');
 const packageJson = require('../package.json');
 const { writeToLogFile } = require('./logger.js');
 
@@ -113,13 +113,13 @@ app.post(['/submit'], cors(corsOptions), [
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(chalk.red('Validation errors:'));
+    console.log(pc.red('Validation errors:'));
     console.log(errors.array());
     writeToLogFile(`Validation errors: ${JSON.stringify(errors.array())}`, 'error', 'host.js', '/submit', false);
     return res.status(400).json({ errors: errors.array() });
   }
 
-  console.log(chalk.green('Received card data:'));
+  console.log(pc.green('Received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`Received card data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/submit', false);
   trelloManager.createCard(req.body.title, req.body.teamNumber, req.body.contactEmail, req.body.contactName, req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, req.path === '/fta/submit').then(() => {
@@ -144,13 +144,13 @@ app.post(['/fta/submit'], cors(corsOptions), [
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(chalk.red('Validation errors:'));
+    console.log(pc.red('Validation errors:'));
     console.log(errors.array());
     writeToLogFile(`Validation errors: ${JSON.stringify(errors.array())}`, 'error', 'host.js', '/fta/submit', false);
     return res.status(400).json({ errors: errors.array() });
   }
 
-  console.log(chalk.green('API Key validated, received card data:'));
+  console.log(pc.green('API Key validated, received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`API Card Data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/api/create', false);
   trelloManager.createCard(req.body.title, req.body.teamNumber, '', 'FTA', req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true).then(() => {
@@ -175,7 +175,7 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(chalk.red('Validation errors:'));
+    console.log(pc.red('Validation errors:'));
     console.log(errors.array());
     writeToLogFile(`Validation errors: ${JSON.stringify(errors.array())}`, 'error', 'host.js', '/api/create', false);
     return res.status(400).json({ errors: errors.array() });

@@ -3,7 +3,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const chalk = require('chalk');
+const pc = require('picocolors');
 // async fs
 const fsAsync = require('fs').promises;
 
@@ -39,20 +39,20 @@ function writeToLogFile(message, type, sourceFile, sourceFunction, toConsoleAlso
   const paddedType = (`<${type.toUpperCase()}>`).padEnd(7);
   const paddedFileAndFunction = (`(${sourceFile})[${sourceFunction}]`).padEnd(30);
 
-  // Send to console as well (basically the same thing, just with chalk coloring and no padding)
+  // Send to console as well (basically the same thing, just with picocolors coloring and no padding)
   if (toConsoleAlso) {
     switch (type) {
       case 'info':
-        console.log(chalk.green(`${formattedDate} <INFO> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
+        console.log(pc.green(`${formattedDate} <INFO> (${sourceFile})[${sourceFunction}] - ${pc.cyan(message)}`));
         break;
       case 'warn':
-        console.log(chalk.yellow(`${formattedDate} <WARN> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
+        console.log(pc.yellow(`${formattedDate} <WARN> (${sourceFile})[${sourceFunction}] - ${pc.cyan(message)}`));
         break;
       case 'error':
-        console.log(chalk.red(`${formattedDate} <ERROR> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
+        console.log(pc.red(`${formattedDate} <ERROR> (${sourceFile})[${sourceFunction}] - ${pc.cyan(message)}`));
         break;
       default:
-        console.log(chalk.magenta(`${formattedDate} <UNKNOWN> (${sourceFile})[${sourceFunction}] - ${chalk.cyan(message)}`));
+        console.log(pc.magenta(`${formattedDate} <UNKNOWN> (${sourceFile})[${sourceFunction}] - ${pc.cyan(message)}`));
     }
   }
 

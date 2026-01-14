@@ -1,8 +1,8 @@
 {
   "name": "mn-csa-website",
   "private": true,
-  "version": "1.0.3",
-  "description": "",
+  "version": "2.0.0",
+  "description": "A simple web app to act as a front-end for the Minnesota CSA Trello board, used by both teams and FRC Nexus to submit support tickets.",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,16 +16,17 @@
   "author": "Logan S. - EthyMoney",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
-    "form-data": "^4.0.5",
     "helmet": "^8.1.0",
-    "node-fetch": "^2.7.0"
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
-    "eslint": "^8.57.0",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
+    "globals": "^17.0.0",
     "nodemon": "^3.1.11"
   }
 }
