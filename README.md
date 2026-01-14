@@ -3,6 +3,7 @@
 This website is designed to help teams in FRC Northland get help from CSAs in a more efficient manner that can be easily tracked and managed. This is used to track issues both during and even outside of competition events.
 
 ### New to FRC or Not Sure What a CSA is?
+
 A Control System Advisor (CSA) is a volunteer at FIRST Robotics Competition events that helps teams with their robot's control system. They are the folks in the bright orange baseball caps that are really easy to spot. Common things CSAs assist with include the RoboRIO, the radio, the driver station, the programming language, electronics, and just about anything else related to running the robot. CSAs are there to help teams keep their robot running and playing on the field throughout the event so they can have the best possible experience. CSAs also help teams learn about their control system and how to work with and troubleshoot it. CSAs are a great resource for teams to use both at events and at home outside of events. The orange hats are your friend!
 
 ## Contents
@@ -12,6 +13,11 @@ A Control System Advisor (CSA) is a volunteer at FIRST Robotics Competition even
   - [Contents](#contents)
   - [Running With Docker](#running-with-docker)
   - [Running Without Docker](#running-without-docker)
+  - [Configuration](#configuration)
+    - [Required Fields](#required-fields)
+    - [Optional Fields](#optional-fields)
+    - [Board Configuration](#board-configuration)
+    - [Label Configuration](#label-configuration)
   - [Development](#development)
     - [Important files and directories](#important-files-and-directories)
     - [Important Commands](#important-commands)
@@ -37,17 +43,21 @@ docker run -d --name mn-csa-website -p 3000:3000 -v mn-csa-website:/usr/src/app/
 4. Once you have your config file filled in, you can start the container again using the following command. The container should start and stay running this time. You will see output similar to the following if it starts successfully. Log entries will be written to a log file in the same directory as the config file so you can see what's happening behind the scenes and debug any issues that may arise.
   
 ```bash
-4/4/2024 3:01:32 PM <INFO> (pre-checks.js)[checkIt] - Config file found, verifying it..
-4/4/2024 3:01:32 PM <INFO> (pre-checks.js)[checkIt] - Config file looks good.
-4/4/2024 3:01:32 PM <INFO> (pre-checks.js)[checkIt] - Pre-checks complete.
-4/4/2024 3:01:32 PM <INFO> (logger.js)[trimLogFile] - Log file trim ran, 0 entries removed. Currently 794 entries, oldest from 4/4/2024. File size 81.68 KB
-4/4/2024 3:01:33 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
-4/4/2024 3:01:33 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
-4/4/2024 3:01:33 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
-4/4/2024 3:01:34 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
-4/4/2024 3:01:34 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
-4/4/2024 3:01:34 PM <INFO> (trello.js)[verifyLabels] - Found 28 labels on board CxCc1Ofe
-4/4/2024 3:01:34 PM <INFO> (host.js)[app.listen] - Server is running on http://localhost:3000
+1/14/2026 4:00:49 PM <INFO> (pre-checks.js)[checkIt] - Config file found, verifying it..
+1/14/2026 4:00:49 PM <INFO> (pre-checks.js)[checkIt] - Config file looks good.
+1/14/2026 4:00:49 PM <INFO> (pre-checks.js)[checkIt] - Pre-checks complete.
+1/14/2026 4:00:50 PM <INFO> (logger.js)[trimLogFile] - Log file trim ran, 0 entries removed. Currently 11473 entries, oldest from 10/16/2025. File size 1.60 MB
+1/14/2026 4:00:51 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board idy3xZJW
+1/14/2026 4:00:51 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board pm29P25h
+1/14/2026 4:00:51 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board 5jzi7iPY
+1/14/2026 4:00:51 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board ijkLQFUb
+1/14/2026 4:00:52 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board y35B6h3q
+1/14/2026 4:00:52 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board w7CtTrwK
+1/14/2026 4:00:52 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board ou3Xyr0D
+1/14/2026 4:00:53 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board eAqHCPhJ
+1/14/2026 4:00:53 PM <INFO> (trello.js)[verifyLabels] - Found 29 labels on board idy3xZJW
+1/14/2026 4:00:53 PM <INFO> (host.js)[app.listen] - Server is running on http://localhost:3000
+1/14/2026 4:00:53 PM <INFO> (host.js)[config-watcher] - Watching config file for changes...
 ```
 
 5. That's it! You can now access your instance of the website by going to `http://localhost:3000` (or `http://localhost:3000/fta` for the FTA version) in your web browser. You can also access it from other devices on your network by replacing `localhost` with the IP address of the machine running the container.
@@ -64,6 +74,78 @@ If you'd like to run the application without using Docker, you can do so by foll
 6. Run `npm start` to start the application. You should see output similar to what is shown in the Docker section above.
 7. That's it! You can now access your instance of the website by going to `http://localhost:3000` (or `http://localhost:3000/fta` for the FTA version) in your web browser. You can also access it from other devices on your network by replacing `localhost` with the IP address of the machine running the application. Log entries will be written to a log file in the `config` directory so you can see what's happening behind the scenes and debug any issues that may arise.
 
+## Configuration
+
+The application is configured through a `config.json` file. On first run, a default config file will be created from `config-template.json` that you can customize.
+
+### Required Fields
+
+| Field | Description |
+|-------|-------------|
+
+| `trelloAppKey` | Your Trello API application key. Get it from [Trello Power-Ups Admin](https://trello.com/power-ups/admin/). |
+| `trelloUserToken` | Your Trello API user token. Get it from the same page as the app key. |
+| `trelloBoards` | Array of board configurations (see [Board Configuration](#board-configuration) below). |
+| `trelloBoardLabels` | Array of label definitions (see [Label Configuration](#label-configuration) below). |
+
+### Optional Fields
+
+| Field | Default | Description |
+|-------|---------|-------------|
+
+| `apiKey` | `""` | Optional API key for authenticating requests. If empty, no API key is required. This is mainly used by external systems generating requests for CSAs programmatically, like FRC Nexus. |
+| `appPort` | `3000` | The port the application will run on. |
+| `defaultEvent` | First enabled event | The event that will be pre-selected in the form dropdown. Must match a `frontendEventSelection` value from your boards. |
+
+### Board Configuration
+
+Each board in the `trelloBoards` array has the following properties:
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+
+| `frontendEventSelection` | string | Yes | The display name shown in the event dropdown on the form. |
+| `trelloId` | string | Yes | The Trello board ID. Find this in your board's URL (e.g., `https://trello.com/b/ihy6gZJK/board-name` → `ihy6gZJK`). |
+| `enabled` | boolean | No | Whether this event is available for selection in the UI. Defaults to `false` if not specified. |
+
+**Example:**
+
+```json
+{
+  "frontendEventSelection": "Build/Off Season",
+  "trelloId": "ihy6gZJK",
+  "enabled": true
+}
+```
+
+**Notes:**
+
+- At least one board must be enabled for users to submit requests.
+- The `defaultEvent` should match an enabled board's `frontendEventSelection` value.
+- Boards with `"enabled": false` will not appear in the frontend dropdown.
+
+### Label Configuration
+
+Labels are automatically created on your Trello boards if they don't exist. Each label in the `trelloBoardLabels` array has:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | string | The label text displayed on Trello cards. |
+| `color` | string | The label color. Must be a valid Trello color. |
+
+**Valid Trello colors:** `green`, `yellow`, `orange`, `red`, `purple`, `blue`, `sky`, `lime`, `pink`, `black`
+
+**Example:**
+
+```json
+{
+  "name": "Code - Java",
+  "color": "blue"
+}
+```
+
+You can customize, add, or remove labels as needed for your use case. The default template includes common FRC-related categories like code languages, electronics issues, field problems, and priority levels.
+
 ## Development
 
 So you want to contribute to the project or tweak things yourself? Great! Here's how to get started.
@@ -72,7 +154,12 @@ First, go ahead and follow the same steps as above in the "Running Without Docke
 
 ### Important files and directories
 
-- `config/config.json` - This is where you will put your Trello app key and token, as well as the Trello IDs of the boards you want to use with the application. You can also customize, add, or remove labels from this file as you wish. Just be careful to make sure that colors you select are available as colors in the Trello REST API.
+- `config/config.json` - This is where you will put your Trello app key and token, as well as the Trello IDs of the boards you want to use with the application. See the [Configuration](#configuration) section for details on all available options including:
+  - Enabling/disabling specific events with the `enabled` property
+  - Setting a default event with `defaultEvent`
+  - Configuring the app port with `appPort`
+  - Adding an optional API key with `apiKey`
+  - Customizing labels with the `trelloBoardLabels` array
 
 - `config/backend.log` - This is the log file that the application creates and writes to as it does its thing. It contains organized messages from the application that can help with debugging and tracking what's happening behind the scenes. It's trimmed automatically to keep it from getting too large over time. Managed by `backend/logger.js`.
 
@@ -102,6 +189,6 @@ For your convenience I added some NPM scripts to the package.json to make some d
 
 ## Disclaimer
 
-This project and the associated [website](https://support.mnfrccsa.com) is not affiliated with FIRST or any of its programs or partners. This project is independently created and represented by Logan Steffen, a Minnesota CSA of 5 years.
+This project and the associated [website](https://support.mnfrccsa.com) is not affiliated with FIRST or any of its programs or partners. This project is independently created and represented by Logan Steffen, a Minnesota CSA of 7 years.
 
 Good luck teams, we can't wait to see you at the events!
