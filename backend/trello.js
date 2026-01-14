@@ -1,15 +1,20 @@
 // This is where the backend logic to handle creating a new trello card will go. 
 // We will use the Trello API to create a new card based on the info submitted in the form.
 
-const config = require('../config/config.json');
-const fetch = require('node-fetch');
-const FormData = require('form-data');
+const path = require('path');
 const { writeToLogFile } = require('./logger.js');
-const trelloBoards = config.trelloBoards;
-const trelloLabels = config.trelloBoardLabels;
+
+// Dynamic config getter - always returns fresh config (supports hot-reload from host.js)
+function getConfig() {
+  // Clear cache and re-require to get latest config
+  const configPath = path.join(__dirname, '../config/config.json');
+  delete require.cache[require.resolve(configPath)];
+  return require(configPath);
+}
 
 // Check to see if the config file is valid (this will catch a docker user that forgot to fill this in)
-if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !config.trelloBoardLabels) {
+const initialConfig = getConfig();
+if (!initialConfig.trelloAppKey || !initialConfig.trelloUserToken || !initialConfig.trelloBoards || !initialConfig.trelloBoardLabels) {
   writeToLogFile('Invalid config file! Please make sure you have specified your Trello app key, user token, and at least one board and label in the config file.', 'error', 'trello.js', 'configCheck');
   writeToLogFile('If this is your first time running this app, please see the README for instructions on how to get your Trello app key and user token. These need to go in the config/config.json file.', 'error', 'trello.js', 'configCheck');
   process.exit(1);
@@ -42,11 +47,14 @@ if (!config.trelloAppKey || !config.trelloUserToken || !config.trelloBoards || !
  * @throws Will throw an error if the fetch operation fails.
  */
 async function createCard(title, teamNumber, contactEmail, contactName, frcEvent, problemCategory, priority, description, attachments, ftaSubmission = false) {
+  const config = getConfig();
+  const trelloBoards = config.trelloBoards;
+
   // find the id of the board we want to create the card on according to the selected event
   let trelloId;
   try {
     trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
-  } catch (error) {
+  } catch {
     writeToLogFile(`Error finding trelloId for board with event "${frcEvent}"`, 'error', 'trello.js', 'createCard');
     throw new Error(`Error finding trelloId for board with event "${frcEvent}". Did you provide a valid event?`);
   }
@@ -105,15 +113,15 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
       for (const attachment of attachments) {
         try {
           const buffer = Buffer.from(attachment.data, 'base64');
+          const blob = new Blob([buffer]);
           const formData = new FormData();
           formData.append('key', config.trelloAppKey);
           formData.append('token', config.trelloUserToken);
-          formData.append('file', buffer, attachment.name);
+          formData.append('file', blob, attachment.name);
 
           const attachmentRes = await fetch(`https://api.trello.com/1/cards/${card.id}/attachments`, {
             method: 'POST',
-            body: formData,
-            headers: formData.getHeaders()
+            body: formData
           });
 
           if (!attachmentRes.ok) {
@@ -152,6 +160,10 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
  * @throws Will throw an error if the fetch operation fails.
  */
 async function verifyLabels() {
+  const config = getConfig();
+  const trelloBoards = config.trelloBoards;
+  const trelloLabels = config.trelloBoardLabels;
+
   for (const board of trelloBoards) {
     const trelloId = board.trelloId;
     const boardId = await getBoardIdByTrelloId(trelloId);
@@ -194,6 +206,7 @@ async function verifyLabels() {
  * @throws Will throw an error if the fetch operation fails.
  */
 async function getIncomingListIdOfBoard(trelloId) {
+  const config = getConfig();
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/lists?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
     const resJson = await res.json();
@@ -217,6 +230,7 @@ async function getIncomingListIdOfBoard(trelloId) {
  * @throws Will throw an error if the fetch operation fails.
  */
 async function getLabelIdByName(trelloId, labelName) {
+  const config = getConfig();
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
     const resJson = await res.json();
@@ -245,6 +259,7 @@ async function getLabelIdByName(trelloId, labelName) {
  * @throws Will throw an error if the fetch operation fails.
  */
 async function getBoardIdByTrelloId(trelloId) {
+  const config = getConfig();
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
     const resJson = await res.json();
@@ -267,6 +282,7 @@ async function getBoardIdByTrelloId(trelloId) {
  * @throws Will throw an error if the fetch operation fails.
  */
 async function deleteAllLabelsOnBoard(trelloId) {
+  const config = getConfig();
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/labels?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
     const resJson = await res.json();
@@ -298,6 +314,9 @@ async function deleteAllLabelsOnBoard(trelloId) {
  * @throws Will throw an error if the fetch operation fails.
  */
 async function deleteAllLabelsOnAllBoards() {
+  const config = getConfig();
+  const trelloBoards = config.trelloBoards;
+
   for (const board of trelloBoards) {
     const trelloId = board.trelloId;
     await deleteAllLabelsOnBoard(trelloId);

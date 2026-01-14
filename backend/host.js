@@ -1,12 +1,14 @@
 const preCheck = require('./pre-checks.js');
 preCheck();
-const config = require('../config/config.json');
+const fs = require('fs');
+const path = require('path');
+let config = require('../config/config.json');
+const configPath = path.join(__dirname, '../config/config.json');
 const express = require('express');
 const helmet = require('helmet');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
 const trelloManager = require('./trello.js');
-const path = require('path');
 const pc = require('picocolors');
 const packageJson = require('../package.json');
 const { writeToLogFile } = require('./logger.js');
@@ -98,6 +100,26 @@ const apiKeyMiddleware = (req, res, next) => {
   }
 };
 
+// Function to reload config from disk
+function reloadConfig() {
+  try {
+    // Run validation checks on the new config first
+    if (!preCheck.validateConfig()) {
+      writeToLogFile('Config reload aborted due to validation errors. Previous config remains active.', 'error', 'host.js', 'reloadConfig');
+      return false;
+    }
+
+    // Clear the require cache to force a fresh read
+    delete require.cache[require.resolve('../config/config.json')];
+    config = require('../config/config.json');
+    writeToLogFile('Config reloaded successfully.', 'info', 'host.js', 'reloadConfig');
+    return true;
+  } catch (err) {
+    writeToLogFile(`Failed to reload config: ${err.message}`, 'error', 'host.js', 'reloadConfig');
+    return false;
+  }
+}
+
 // Endpoint for submitting a Trello card (CORS protected, only allows requests from the frontend interface)
 app.post(['/submit'], cors(corsOptions), [
   body('title').trim().isLength({ min: 1 }).withMessage('Title must not be empty'),
@@ -181,7 +203,7 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  console.log(chalk.green('API Key validated, received card data:'));
+  console.log(pc.green('API Key validated, received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`API Card Data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/api/create', false);
   trelloManager.createCard(req.body.title, req.body.teamNumber, '', 'FTA', req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true).then(() => {
@@ -199,9 +221,48 @@ app.get('/version', (req, res) => {
 });
 
 
+// Endpoint for getting the list of enabled events from config
+app.get('/events', (req, res) => {
+  try {
+    // Prevent caching so config changes are reflected immediately
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
+    const enabledEvents = config.trelloBoards
+      .filter(board => board.enabled)
+      .map(board => board.frontendEventSelection);
+
+    writeToLogFile(`Events requested, returning ${enabledEvents.length} enabled events`, 'info', 'host.js', '/events');
+
+    res.status(200).json({
+      events: enabledEvents,
+      defaultEvent: config.defaultEvent || enabledEvents[0] || ''
+    });
+  } catch (err) {
+    writeToLogFile(`Error in /events endpoint: ${err.message}`, 'error', 'host.js', '/events');
+    res.status(500).json({ error: 'Failed to load events', events: [], defaultEvent: '' });
+  }
+});
+
+
 // Start the server
 app.listen(port, async () => {
   await trelloManager.verifyLabels();
   //await trelloManager.deleteAllLabelsOnAllBoards();
   writeToLogFile(`Server is running on http://localhost:${port}`, 'info', 'host.js', 'app.listen');
+
+  // Watch config file for changes and reload
+  let debounceTimer = null;
+  fs.watch(configPath, (eventType) => {
+    if (eventType === 'change') {
+      // Debounce to prevent multiple reloads from rapid file changes
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        writeToLogFile('Config file changed, reloading...', 'info', 'host.js', 'config-watcher');
+        reloadConfig();
+      }, 1000);
+    }
+  });
+  writeToLogFile('Watching config file for changes...', 'info', 'host.js', 'config-watcher');
 });

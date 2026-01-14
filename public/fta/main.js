@@ -47,6 +47,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const versionNumber = data.version;
       document.getElementById('version-number').innerText = 'v' + versionNumber;
     });
+
+    // Fetch and populate the events dropdown from config
+    fetch('/events').then((response) => {
+      return response.json();
+    }).then((data) => {
+      const eventSelect = document.getElementById('event');
+      eventSelect.innerHTML = ''; // Clear loading placeholder
+      data.events.forEach((event) => {
+        const option = document.createElement('option');
+        option.value = event;
+        option.textContent = event;
+        if (event === data.defaultEvent) {
+          option.selected = true;
+        }
+        eventSelect.appendChild(option);
+      });
+    }).catch((error) => {
+      console.error('Error fetching events:', error);
+      const eventSelect = document.getElementById('event');
+      eventSelect.innerHTML = '<option value="" selected>Error loading events</option>';
+    });
   };
 
   form.addEventListener('submit', (event) => {

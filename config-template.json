@@ -3,46 +3,52 @@
   "trelloUserToken": "",
   "apiKey": "",
   "appPort": 3000,
+  "defaultEvent": "Build/Off Season",
   "trelloBoards": [
     {
-      "frontendEventSelection": "Build Season",
-      "trelloId": ""
-    },
-    {
-      "frontendEventSelection": "Off Season",
-      "trelloId": ""
+      "frontendEventSelection": "Build/Off Season",
+      "trelloId": "",
+      "enabled": true
     },
     {
       "frontendEventSelection": "Duluth - Northern Lights",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     },
     {
       "frontendEventSelection": "Duluth - Lake Superior",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     },
     {
       "frontendEventSelection": "10,000 Lakes",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     },
     {
       "frontendEventSelection": "Granite City",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     },
     {
       "frontendEventSelection": "Great Northern",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     },
     {
       "frontendEventSelection": "Bluff Country",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     },
     {
       "frontendEventSelection": "North Star",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     },
     {
       "frontendEventSelection": "State",
-      "trelloId": ""
+      "trelloId": "",
+      "enabled": false
     }
   ],
   "trelloBoardLabels": [
