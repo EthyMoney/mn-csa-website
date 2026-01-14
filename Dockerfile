@@ -1,5 +1,5 @@
-# Base image for nodejs (jod, which is v22 LTS)
-FROM node:jod
+# Base image for nodejs (krypton, which is v24 LTS)
+FROM node:krypton
 
 # Set the shell to bash
 SHELL ["/bin/bash", "-c"]
