@@ -87,9 +87,56 @@ app.use((req, res, next) => {
   next();
 });
 
+// Static file options - prevent caching
+const staticOptions = {
+  etag: false,
+  lastModified: false,
+  index: false, // Don't serve index.html automatically, we'll handle it manually with cache-busting
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+  }
+};
+
+// Cache-busting version string based on package version
+const cacheVersion = packageJson.version;
+
+// Serve index.html with cache-busting query strings injected
+function serveHtmlWithCacheBusting(htmlPath, res) {
+  fs.readFile(htmlPath, 'utf8', (err, html) => {
+    if (err) {
+      res.status(500).send('Error loading page');
+      return;
+    }
+    // Inject cache-busting version to JS and CSS files
+    const modifiedHtml = html
+      .replace(/href="([^"]+\.css)"/g, `href="$1?v=${cacheVersion}"`)
+      .replace(/src="([^"]+\.js)"/g, `src="$1?v=${cacheVersion}"`);
+
+    res.set('Content-Type', 'text/html');
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.send(modifiedHtml);
+  });
+}
+
+// Serve main index.html
+app.get('/', (req, res) => {
+  serveHtmlWithCacheBusting(path.join(__dirname, '../public/index.html'), res);
+});
+
+// Serve FTA index.html
+app.get('/fta', (req, res) => {
+  serveHtmlWithCacheBusting(path.join(__dirname, '../public/fta/index.html'), res);
+});
+app.get('/fta/', (req, res) => {
+  serveHtmlWithCacheBusting(path.join(__dirname, '../public/fta/index.html'), res);
+});
+
 // Serve static files from the public directory
-app.use('/', express.static(path.join(__dirname, '../public')));
-app.use('/fta', express.static(path.join(__dirname, '../public')));
+app.use('/', express.static(path.join(__dirname, '../public'), staticOptions));
+app.use('/fta', express.static(path.join(__dirname, '../public'), staticOptions));
 
 const apiKeyMiddleware = (req, res, next) => {
   const userApiKey = req.header('API-Key');
