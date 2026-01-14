@@ -82,7 +82,6 @@ The application is configured through a `config.json` file. On first run, a defa
 
 | Field | Description |
 |-------|-------------|
-
 | `trelloAppKey` | Your Trello API application key. Get it from [Trello Power-Ups Admin](https://trello.com/power-ups/admin/). |
 | `trelloUserToken` | Your Trello API user token. Get it from the same page as the app key. |
 | `trelloBoards` | Array of board configurations (see [Board Configuration](#board-configuration) below). |
@@ -92,7 +91,6 @@ The application is configured through a `config.json` file. On first run, a defa
 
 | Field | Default | Description |
 |-------|---------|-------------|
-
 | `apiKey` | `""` | Optional API key for authenticating requests. If empty, no API key is required. This is mainly used by external systems generating requests for CSAs programmatically, like FRC Nexus. |
 | `appPort` | `3000` | The port the application will run on. |
 | `defaultEvent` | First enabled event | The event that will be pre-selected in the form dropdown. Must match a `frontendEventSelection` value from your boards. |
@@ -103,7 +101,6 @@ Each board in the `trelloBoards` array has the following properties:
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-
 | `frontendEventSelection` | string | Yes | The display name shown in the event dropdown on the form. |
 | `trelloId` | string | Yes | The Trello board ID. Find this in your board's URL (e.g., `https://trello.com/b/ihy6gZJK/board-name` → `ihy6gZJK`). |
 | `enabled` | boolean | No | Whether this event is available for selection in the UI. Defaults to `false` if not specified. |
