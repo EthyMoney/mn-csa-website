@@ -147,6 +147,54 @@ const apiKeyMiddleware = (req, res, next) => {
   }
 };
 
+// Helper function to decode HTML entities (handles double-encoded entities like &amp;gt; coming from external sources like Nexus)
+function decodeHtmlEntities(str) {
+  if (!str) return str;
+  const entities = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': '\'',
+    '&apos;': '\''
+  };
+  // Run multiple passes to handle double-encoding
+  let decoded = str;
+  let prev;
+  do {
+    prev = decoded;
+    for (const [entity, char] of Object.entries(entities)) {
+      decoded = decoded.split(entity).join(char);
+    }
+  } while (decoded !== prev);
+  return decoded;
+}
+
+// Helper function to clean up verbose Nexus API titles
+// Examples:
+//   "Team 5658 has requested help [D5]: Programming- Java" → "Requests help (Programming - Java)"
+//   "FTA request for team 2530 [E3]: Radio lost power" → "FTA Request - Radio lost power"
+function cleanNexusTitle(title) {
+  if (!title) return title;
+
+  // Match FTA request pattern: "FTA request for team XXXX [XY]: <notes>"
+  const ftaMatch = title.match(/^FTA request for team \d+ \[[^\]]+\]:\s*(.+)$/i);
+  if (ftaMatch) {
+    return `FTA Request - ${ftaMatch[1].trim()}`;
+  }
+
+  // Match team help request pattern: "Team XXXX has requested help [XY]: <problem>"
+  const teamMatch = title.match(/^Team \d+ has requested help \[[^\]]+\]:\s*(.+)$/i);
+  if (teamMatch) {
+    // Clean up spacing around dashes in category
+    const problem = teamMatch[1].trim().replace(/-\s*/g, ' - ').replace(/\s+-/g, ' -').replace(/\s+/g, ' ');
+    return `Requests help (${problem})`;
+  }
+
+  // Return original if no pattern matches
+  return title;
+}
+
 // Function to reload config from disk
 function reloadConfig() {
   try {
@@ -253,7 +301,13 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
   console.log(pc.green('API Key validated, received card data:'));
   console.log({ ...req.body, attachments: req.body.attachments.length });
   writeToLogFile(`API Card Data: ${JSON.stringify({ ...req.body, attachments: req.body.attachments.length })}`, 'info', 'host.js', '/api/create', false);
-  trelloManager.createCard(req.body.title, req.body.teamNumber, '', 'FTA', req.body.frcEvent, req.body.problemCategory, req.body.priority, req.body.description, req.body.attachments, true).then(() => {
+
+  // Decode HTML entities that may come from external sources like Nexus, and handle double-encoding (e.g. &amp;gt; should become >, not &gt; in the card description)
+  // Also clean up verbose Nexus titles to be more concise
+  const cleanTitle = cleanNexusTitle(decodeHtmlEntities(req.body.title));
+  const cleanDescription = decodeHtmlEntities(req.body.description);
+
+  trelloManager.createCard(cleanTitle, req.body.teamNumber, '', 'NEXUS', req.body.frcEvent, req.body.problemCategory, req.body.priority, cleanDescription, req.body.attachments, false, true).then(() => {
     res.status(200).send('API Request received successfully!');
   }).catch((err) => {
     console.error(err);

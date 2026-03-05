@@ -167,6 +167,10 @@
     {
       "name": "FTA SUBMITTED",
       "color": "blue"
+    },
+    {
+      "name": "NEXUS SUBMITTED",
+      "color": "purple"
     }
   ]
 }

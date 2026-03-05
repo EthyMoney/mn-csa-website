@@ -46,7 +46,7 @@ if (!initialConfig.trelloAppKey || !initialConfig.trelloUserToken || !initialCon
  * @returns {Promise<void>} Promise object represents the result of the fetch operation.
  * @throws Will throw an error if the fetch operation fails.
  */
-async function createCard(title, teamNumber, contactEmail, contactName, frcEvent, problemCategory, priority, description, attachments, ftaSubmission = false) {
+async function createCard(title, teamNumber, contactEmail, contactName, frcEvent, problemCategory, priority, description, attachments, ftaSubmission = false, nexusSubmission = false) {
   const config = getConfig();
   const trelloBoards = config.trelloBoards;
 
@@ -61,17 +61,26 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
   // find the id of the "incoming" list on the board so we can create the card there
   const listId = await getIncomingListIdOfBoard(trelloId);
 
-  const formattedDescription =
-    (ftaSubmission)
-      ?
-      `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A FTA WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${description || 'none provided'}`
-      :
-      `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A TEAM WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
+  // determine submission type and format description accordingly
+  let formattedDescription;
+  const submissionType = ftaSubmission ? 'fta' : nexusSubmission ? 'nexus' : 'team';
+
+  switch (submissionType) {
+    case 'fta':
+      formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A FTA WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${description || 'none provided'}`;
+      break;
+    case 'nexus':
+      formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A NEXUS WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${description || 'none provided'}`;
+      break;
+    default:
+      formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A TEAM WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
+  }
 
   // lookup the IDs of the labels we want to add to the card based on the selected category and priority
   const problemCategoryLabelId = await getLabelIdByName(trelloId, problemCategory);
   const priorityLabelId = await getLabelIdByName(trelloId, priority);
   const ftaLabelId = await getLabelIdByName(trelloId, 'FTA SUBMITTED');
+  const nexusLabelId = await getLabelIdByName(trelloId, 'NEXUS SUBMITTED');
   let labelIds = [];
 
   // conditionally push problemCategoryLabelId and priorityLabelId and if they exist (might not since they are optional fields on the form for FTA submissions)
@@ -85,6 +94,11 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
   // if this is a FTA submission, add the FTA label
   if (ftaSubmission && ftaLabelId) {
     labelIds.push(ftaLabelId);
+  }
+
+  // if this is a NEXUS submission, add the NEXUS label
+  if (nexusSubmission && nexusLabelId) {
+    labelIds.push(nexusLabelId);
   }
 
   // send the request to create the new card, it will be created at the top of the "incoming" list
