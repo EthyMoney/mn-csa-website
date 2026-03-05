@@ -174,6 +174,7 @@ function decodeHtmlEntities(str) {
 // Examples:
 //   "Team 5658 has requested help [D5]: Programming- Java" → "Requests help (Programming - Java)"
 //   "FTA request for team 2530 [E3]: Radio lost power" → "FTA Request - Radio lost power"
+//   "A volunteer has requested help on behalf of team 8422 [E3]: Radio connection" → "Volunteer requests help on behalf of team (Radio connection)"
 function cleanNexusTitle(title) {
   if (!title) return title;
 
@@ -181,6 +182,13 @@ function cleanNexusTitle(title) {
   const ftaMatch = title.match(/^FTA request for team \d+ \[[^\]]+\]:\s*(.+)$/i);
   if (ftaMatch) {
     return `FTA Request - ${ftaMatch[1].trim()}`;
+  }
+
+  // Match volunteer request pattern: "A volunteer has requested help on behalf of team XXXX [XY]: <problem>"
+  const volunteerMatch = title.match(/^A volunteer has requested help on behalf of team \d+ \[[^\]]+\]:\s*(.+)$/i);
+  if (volunteerMatch) {
+    const problem = volunteerMatch[1].trim().replace(/-\s*/g, ' - ').replace(/\s+-/g, ' -').replace(/\s+/g, ' ');
+    return `Volunteer requests help on behalf of team (${problem})`;
   }
 
   // Match team help request pattern: "Team XXXX has requested help [XY]: <problem>"
