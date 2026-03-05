@@ -38,7 +38,7 @@ const labelKeywordMappings = {
   'Field - Communication': ['field communication', 'lost connection on field', 'disconnected on field', 'field connection', 'fms connection', 'lost connection during match', 'disconnected during match', 'lost communication', 'comms'],
   'Field - General': ['on field', 'during match', 'field fault', 'field issue'],
   'Field - roboRIO Reboot': ['roborio reboot', 'rio reboot', 'roborio restart', 'rio restart', 'roborio crash'],
-  'Field - Radio Reboot': ['radio reboot', 'radio restart', 'radio crash', 'radio issue', 'om5p', 'radio power', 'radio lost power'],
+  'Field - Radio Reboot': ['radio reboot', 'radio restart', 'radio crash', 'radio issue', 'om5p', 'radio power', 'radio lost power', 'radio rebooted'],
   'Firmware update': ['firmware', 'update firmware', 'flash', 'image', 'roborio image', 'radio firmware', 'spark max firmware', 'talon firmware', 'radio update', 'rio update', 'firmware update failure', 'software update', 'update software', 'outdated software', 'outdated firmware', 'firmware version', 'software version'],
   'Practice Field': ['practice field', 'practice area', 'in the pit', 'at the pit', 'pit area', 'test on practice'],
   'Raspberry Pi': ['raspberry pi', 'raspberrypi', 'pi', 'coprocessor', 'rpi']
