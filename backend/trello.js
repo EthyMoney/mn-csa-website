@@ -12,6 +12,92 @@ function getConfig() {
   return require(configPath);
 }
 
+
+/**
+ * Keyword mappings for inferring problem category labels from message content.
+ * Each key is a label name, and the value is an array of keywords/phrases to match.
+ * Keywords are matched case-insensitively against the title and description.
+ */
+const labelKeywordMappings = {
+  'CANBus fault': ['canbus', 'can bus', 'can-bus', 'can fault', 'can error', 'can id', 'canivore', 'phoenix', 'ctre'],
+  'Code - C++': ['c++', 'cpp', 'wpilib c++', 'timedrobot'],
+  'Code - Java': ['java', 'wpilib java', 'gradle', 'vendordeps', 'vendor deps', 'timedrobot'],
+  'Code - LabView': ['labview', 'lab view', 'labview vi', 'national instruments', 'ni labview'],
+  'Code - Python': ['python', 'robotpy', 'pyfrc', 'pip install', 'python3'],
+  'Code - General': ['code', 'programming', 'compile', 'build error', 'deploy', 'deploying', 'wpilib', 'pathplanner', 'auto', 'autonomous', 'teleop', 'command', 'subsystem'],
+  'Communication - Limelight': ['limelight', 'lime light', 'vision', 'apriltag', 'april tag', 'photonvision', 'camera', 'arducam'],
+  'Configuration': ['configure', 'configuration', 'settings', 'tuning', 'pid', 'phoenix tuner', 'rev hardware client', 'spark max'],
+  'Driver Station': ['driver station', 'driverstation', 'ds', 'fms', 'joystick', 'controller', 'xbox', 'gamepad', 'enable', 'disabled'],
+  'Electronic - Brownout': ['brownout', 'brown out', 'voltage drop', 'low voltage', 'battery', 'pdp', 'pdh', 'power distribution'],
+  'Electronic - Communication': ['ethernet', 'network', 'ip address', 'rio not connecting', 'cannot connect', 'connection', 'wifi', 'radio connection'],
+  'Electronic - General': ['electronic', 'electrical', 'circuit', 'fuse', 'breaker', 'main breaker'],
+  'Electronic - Pneumatics': ['pneumatic', 'solenoid', 'compressor', 'pcm', 'ph', 'pneumatic hub', 'air pressure', 'psi', 'cylinder'],
+  'Electronic - Wiring': ['wiring', 'wire', 'connector', 'crimp', 'pwm', 'dio', 'analog', 'solder', 'loose connection'],
+  'Electronic - Incompatible Components': ['incompatible', 'wrong voltage', 'not compatible', '12v', '5v', 'voltage mismatch'],
+  'Field - Brownouts': ['field brownout', 'brownout on field', 'field power', 'lost power on field'],
+  'Field - Communication': ['field communication', 'lost connection on field', 'disconnected on field', 'field connection', 'fms connection'],
+  'Field - General': ['on field', 'during match', 'field fault', 'field issue'],
+  'Field - roboRIO Reboot': ['roborio reboot', 'rio reboot', 'roborio restart', 'rio restart', 'roborio crash'],
+  'Field - Radio Reboot': ['radio reboot', 'radio restart', 'radio crash', 'radio issue', 'om5p'],
+  'Firmware update': ['firmware', 'update firmware', 'flash', 'image', 'roborio image', 'radio firmware', 'spark max firmware', 'talon firmware'],
+  'Practice Field': ['practice field', 'practice', 'pit', 'practice area'],
+  'Raspberry Pi': ['raspberry pi', 'raspberrypi', 'pi', 'coprocessor', 'rpi']
+};
+
+
+/**
+ * Infers a problem category label from the title and description content.
+ * Searches for keywords associated with each label category.
+ *
+ * @function inferLabelFromContent
+ * @param {string} title - The title/summary of the issue.
+ * @param {string} description - The detailed description of the issue.
+ * @returns {string|null} The inferred label name, or null if no match is found.
+ */
+function inferLabelFromContent(title, description) {
+  const config = getConfig();
+  const availableLabels = config.trelloBoardLabels.map(label => label.name);
+  const content = `${title || ''} ${description || ''}`.toLowerCase();
+
+  // Track matches with scores (number of keyword matches per label)
+  const labelScores = {};
+
+  for (const [labelName, keywords] of Object.entries(labelKeywordMappings)) {
+    // Only consider labels that exist in the config
+    if (!availableLabels.some(label => label.toLowerCase() === labelName.toLowerCase())) {
+      continue;
+    }
+
+    let score = 0;
+    for (const keyword of keywords) {
+      // Use word boundary matching for more accurate results
+      const regex = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      if (regex.test(content)) {
+        score++;
+      }
+    }
+    if (score > 0) {
+      labelScores[labelName] = score;
+    }
+  }
+
+  // Find the label with the highest score
+  let bestLabel = null;
+  let highestScore = 0;
+  for (const [labelName, score] of Object.entries(labelScores)) {
+    if (score > highestScore) {
+      highestScore = score;
+      bestLabel = labelName;
+    }
+  }
+
+  if (bestLabel) {
+    writeToLogFile(`Inferred label "${bestLabel}" from content (score: ${highestScore})`, 'info', 'trello.js', 'inferLabelFromContent');
+  }
+
+  return bestLabel;
+}
+
 // Check to see if the config file is valid (this will catch a docker user that forgot to fill this in)
 const initialConfig = getConfig();
 if (!initialConfig.trelloAppKey || !initialConfig.trelloUserToken || !initialConfig.trelloBoards || !initialConfig.trelloBoardLabels) {
@@ -76,8 +162,20 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
       formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A TEAM WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
   }
 
+  // If problemCategory is 'Other or not sure', attempt to infer a better label from the content
+  let effectiveProblemCategory = problemCategory;
+  if (problemCategory?.toLowerCase() === 'other or not sure') {
+    const inferredLabel = inferLabelFromContent(title, description);
+    if (inferredLabel) {
+      writeToLogFile(`Problem category was "Other or not sure", inferred "${inferredLabel}" from content`, 'info', 'trello.js', 'createCard');
+      effectiveProblemCategory = inferredLabel;
+    } else {
+      writeToLogFile('Problem category was "Other or not sure" and no label could be inferred from content', 'info', 'trello.js', 'createCard');
+    }
+  }
+
   // lookup the IDs of the labels we want to add to the card based on the selected category and priority
-  const problemCategoryLabelId = await getLabelIdByName(trelloId, problemCategory);
+  const problemCategoryLabelId = await getLabelIdByName(trelloId, effectiveProblemCategory);
   const priorityLabelId = await getLabelIdByName(trelloId, priority);
   const ftaLabelId = await getLabelIdByName(trelloId, 'FTA SUBMITTED');
   const nexusLabelId = await getLabelIdByName(trelloId, 'NEXUS SUBMITTED');
