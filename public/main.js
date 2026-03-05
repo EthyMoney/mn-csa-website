@@ -54,11 +54,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }).then((data) => {
       const eventSelect = document.getElementById('event');
       eventSelect.innerHTML = ''; // Clear loading placeholder
+
+      // If multiple events, add a placeholder option to force user selection
+      if (data.events.length > 1) {
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select one...';
+        placeholder.selected = true;
+        placeholder.hidden = true;
+        eventSelect.appendChild(placeholder);
+      }
+
       data.events.forEach((event) => {
         const option = document.createElement('option');
         option.value = event;
         option.textContent = event;
-        if (event === data.defaultEvent) {
+        // Auto-select only if there's exactly one event
+        if (data.events.length === 1) {
           option.selected = true;
         }
         eventSelect.appendChild(option);

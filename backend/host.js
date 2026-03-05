@@ -345,12 +345,11 @@ app.get('/events', (req, res) => {
     writeToLogFile(`Events requested, returning ${enabledEvents.length} enabled events`, 'info', 'host.js', '/events');
 
     res.status(200).json({
-      events: enabledEvents,
-      defaultEvent: config.defaultEvent || enabledEvents[0] || ''
+      events: enabledEvents
     });
   } catch (err) {
     writeToLogFile(`Error in /events endpoint: ${err.message}`, 'error', 'host.js', '/events');
-    res.status(500).json({ error: 'Failed to load events', events: [], defaultEvent: '' });
+    res.status(500).json({ error: 'Failed to load events', events: [] });
   }
 });
 

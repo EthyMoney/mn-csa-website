@@ -3,7 +3,6 @@
   "trelloUserToken": "",
   "apiKey": "",
   "appPort": 3000,
-  "defaultEvent": "Build/Off Season",
   "trelloBoards": [
     {
       "frontendEventSelection": "Build/Off Season",

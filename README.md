@@ -93,7 +93,6 @@ The application is configured through a `config.json` file. On first run, a defa
 |-------|---------|-------------|
 | `apiKey` | `""` | Optional API key for authenticating requests. If empty, no API key is required. This is mainly used by external systems generating requests for CSAs programmatically, like FRC Nexus. |
 | `appPort` | `3000` | The port the application will run on. |
-| `defaultEvent` | First enabled event | The event that will be pre-selected in the form dropdown. Must match a `frontendEventSelection` value from your boards. |
 
 ### Board Configuration
 
@@ -118,8 +117,8 @@ Each board in the `trelloBoards` array has the following properties:
 **Notes:**
 
 - At least one board must be enabled for users to submit requests.
-- The `defaultEvent` should match an enabled board's `frontendEventSelection` value.
 - Boards with `"enabled": false` will not appear in the frontend dropdown.
+- If only one event is enabled, it will be auto-selected. If multiple events are enabled, users must choose one.
 
 ### Label Configuration
 
@@ -153,7 +152,6 @@ First, go ahead and follow the same steps as above in the "Running Without Docke
 
 - `config/config.json` - This is where you will put your Trello app key and token, as well as the Trello IDs of the boards you want to use with the application. See the [Configuration](#configuration) section for details on all available options including:
   - Enabling/disabling specific events with the `enabled` property
-  - Setting a default event with `defaultEvent`
   - Configuring the app port with `appPort`
   - Adding an optional API key with `apiKey`
   - Customizing labels with the `trelloBoardLabels` array
