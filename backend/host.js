@@ -179,20 +179,20 @@ function cleanNexusTitle(title) {
   if (!title) return title;
 
   // Match FTA request pattern: "FTA request for team XXXX [XY]: <notes>"
-  const ftaMatch = title.match(/^FTA request for team \d+ \[[^\]]+\]:\s*(.+)$/i);
+  const ftaMatch = title.match(/^FTA request for team \d+\s*\[[^\]]+\]:\s*(.+)$/i);
   if (ftaMatch) {
     return `FTA Request - ${ftaMatch[1].trim()}`;
   }
 
   // Match volunteer request pattern: "A volunteer has requested help on behalf of team XXXX [XY]: <problem>"
-  const volunteerMatch = title.match(/^A volunteer has requested help on behalf of team \d+ \[[^\]]+\]:\s*(.+)$/i);
+  const volunteerMatch = title.match(/^A volunteer has requested help on behalf of team \d+\s*\[[^\]]+\]:\s*(.+)$/i);
   if (volunteerMatch) {
     const problem = volunteerMatch[1].trim().replace(/-\s*/g, ' - ').replace(/\s+-/g, ' -').replace(/\s+/g, ' ');
     return `Volunteer requests help on behalf of team (${problem})`;
   }
 
   // Match team help request pattern: "Team XXXX has requested help [XY]: <problem>"
-  const teamMatch = title.match(/^Team \d+ has requested help \[[^\]]+\]:\s*(.+)$/i);
+  const teamMatch = title.match(/^Team \d+ has requested help\s*\[[^\]]+\]:\s*(.+)$/i);
   if (teamMatch) {
     // Clean up spacing around dashes in category
     const problem = teamMatch[1].trim().replace(/-\s*/g, ' - ').replace(/\s+-/g, ' -').replace(/\s+/g, ' ');

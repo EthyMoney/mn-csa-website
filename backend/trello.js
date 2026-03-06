@@ -19,7 +19,7 @@ function getConfig() {
  * Keywords are matched case-insensitively against the title and description.
  */
 const labelKeywordMappings = {
-  'CANBus fault': ['canbus', 'can bus', 'can-bus', 'can fault', 'can error', 'can id', 'canivore', 'phoenix', 'ctre'],
+  'CANBus fault': ['canbus', 'can bus', 'can-bus', 'can fault', 'can error', 'can id', 'canivore', 'phoenix', 'ctre', 'can issues', 'can errors'],
   'Code - C++': ['c++', 'cpp', 'wpilib c++', 'timedrobot'],
   'Code - Java': ['java', 'wpilib java', 'gradle', 'vendordeps', 'vendor deps', 'timedrobot'],
   'Code - LabView': ['labview', 'lab view', 'labview vi', 'national instruments', 'ni labview'],
@@ -27,7 +27,7 @@ const labelKeywordMappings = {
   'Code - General': ['code', 'programming', 'compile', 'build error', 'deploy', 'deploying', 'wpilib', 'pathplanner', 'auto', 'autonomous', 'teleop', 'command', 'subsystem'],
   'Communication - Limelight': ['limelight', 'lime light'],
   'Configuration': ['configure', 'configuration', 'settings', 'tuning', 'pid', 'phoenix tuner', 'rev hardware client'],
-  'Driver Station': ['driver station', 'driverstation', 'ds', 'fms', 'joystick', 'controller', 'xbox', 'gamepad', 'enable', 'disabled', 'dashboard', 'ds connection', 'ds communication', 'elastic', 'networktables', 'nt4', 'shuffleboard', 'smartdashboard'],
+  'Driver Station': ['driver station', 'driverstation', 'ds', 'fms', 'protocol rates', 'joystick', 'controller', 'xbox', 'gamepad', 'enable', 'disabled', 'dashboard', 'ds connection', 'ds communication', 'elastic', 'networktables', 'nt4', 'shuffleboard', 'smart dashboard'],
   'Electronic - Brownout': ['brownout', 'brown out', 'voltage drop', 'low voltage', 'low battery', 'pdp', 'pdh', 'power distribution'],
   'Electronic - Communication': ['ethernet', 'network', 'ip address', 'rio not connecting', 'cannot connect', 'connection', 'wifi', 'radio connection', 'ping', 'firewall', 'ip', 'dhcp', 'static ip', 'network configuration', 'mdns'],
   'Electronic - General': ['electronic', 'electrical', 'circuit', 'fuse', 'breaker', 'main breaker', 'short', 'wire', 'smoke', 'burning smell', 'sparks', 'overheat', 'overheating', 'power loss', 'no power', 'battery', 'voltage'],
@@ -36,7 +36,7 @@ const labelKeywordMappings = {
   'Electronic - Incompatible Components': ['incompatible', 'wrong voltage', 'not compatible', 'voltage mismatch', 'illegal'],
   'Field - Brownouts': ['field brownout', 'brownout on field', 'field power', 'lost power on field'],
   'Field - Communication': ['field communication', 'lost connection on field', 'disconnected on field', 'field connection', 'fms connection', 'lost connection during match', 'disconnected during match', 'lost communication', 'comms'],
-  'Field - General': ['on field', 'during match', 'field fault', 'field issue'],
+  'Field - General': ['on field', 'during match', 'field fault', 'field issue', 'bypassed'],
   'Field - roboRIO Reboot': ['roborio reboot', 'rio reboot', 'roborio restart', 'rio restart', 'roborio crash'],
   'Field - Radio Reboot': ['radio reboot', 'radio restart', 'radio crash', 'radio issue', 'om5p', 'radio power', 'radio lost power', 'radio rebooted'],
   'Firmware update': ['firmware', 'update firmware', 'flash', 'image', 'roborio image', 'radio firmware', 'spark max firmware', 'talon firmware', 'radio update', 'rio update', 'firmware update failure', 'software update', 'update software', 'outdated software', 'outdated firmware', 'firmware version', 'software version'],
@@ -151,12 +151,26 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
   let formattedDescription;
   const submissionType = ftaSubmission ? 'fta' : nexusSubmission ? 'nexus' : 'team';
 
+  // Clean up description for API submissions (FTA/Nexus)
+  let cleanedDescription = description;
+  if (submissionType !== 'team' && description) {
+    // Remove >> symbols and HTML-encoded variants
+    cleanedDescription = description
+      .replace(/&amp;gt;/g, '')  // HTML double-encoded >
+      .replace(/&gt;/g, '')       // HTML-encoded >
+      .replace(/>>/g, '')         // Plain >>
+      .replace(/\s+>+\s*/g, ' ')  // Stray > with whitespace
+      .trim();
+    // Add line break before "FTA notes:" and make it bold (case-insensitive)
+    cleanedDescription = cleanedDescription.replace(/(\s*)(FTA notes:)/gi, '\n\n**$2**');
+  }
+
   switch (submissionType) {
     case 'fta':
-      formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A FTA WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${description || 'none provided'}`;
+      formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A FTA WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${cleanedDescription || 'none provided'}`;
       break;
     case 'nexus':
-      formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A NEXUS WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${description || 'none provided'}`;
+      formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A NEXUS WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Additional Details:** ${cleanedDescription || 'none provided'}`;
       break;
     default:
       formattedDescription = `**THIS IS AN AUTOMATICALLY CREATED CARD FROM A TEAM WEB SUBMISSION**\n\n**Team Number:** ${teamNumber}\n\n**Contact Email:** ${contactEmail}\n\n**Contact Name:** ${contactName}\n\n**Description:** ${description}`;
@@ -302,6 +316,7 @@ async function verifyLabels() {
     }
     else {
       writeToLogFile(`Error getting labels on board ${trelloId}`, 'error', 'trello.js', 'verifyLabels');
+      writeToLogFile(`Error Details: ${res.status} - ${res.statusText}`, 'error', 'trello.js', 'verifyLabels');
     }
   }
 }
