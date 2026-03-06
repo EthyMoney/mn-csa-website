@@ -19,6 +19,9 @@ const port = config.appPort;
 // Disable x-powered-by header (hides that express is being used)
 app.disable('x-powered-by');
 
+// Trust the first proxy so req.ip reflects the real client IP from x-forwarded-for
+app.set('trust proxy', 1);
+
 // Use helmet to secure the app by setting various HTTP headers
 app.use(helmet());
 
@@ -71,8 +74,7 @@ const corsOptions = {
 app.use((req, res, next) => {
   if (req.path === '/') {
     writeToLogFile(`Server Interaction - PAGE LOADED: ${req.method} ${req.path}`, 'info', 'host.js', 'logging-middleware');
-    // log the user's device
-    writeToLogFile(`User Device: ${req.headers['user-agent']}`, 'info', 'host.js', 'logging-middleware');
+    writeToLogFile(`Client IP: ${req.ip}`, 'info', 'host.js', 'logging-middleware');
     next();
     return;
   }
@@ -82,8 +84,6 @@ app.use((req, res, next) => {
     return;
   }
   writeToLogFile(`Server Interaction: ${req.method} ${req.path}`, 'info', 'host.js', 'logging-middleware');
-  // log the user's device
-  writeToLogFile(`User Device: ${req.headers['user-agent']}`, 'info', 'host.js', 'logging-middleware');
   next();
 });
 
