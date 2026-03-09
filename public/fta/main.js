@@ -54,11 +54,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }).then((data) => {
       const eventSelect = document.getElementById('event');
       eventSelect.innerHTML = ''; // Clear loading placeholder
+
+      // Determine which event to auto-select (if any)
+      let autoSelectEvent = null;
+      if (data.events.length === 1) {
+        // Only one event - auto-select it
+        autoSelectEvent = data.events[0];
+      } else if (data.events.length === 2) {
+        // Two events - auto-select the one that isn't the off-season event
+        autoSelectEvent = data.events.find(e => !e.toLowerCase().includes('off season')) || data.events[0];
+      }
+      // 3+ events: no auto-select, user must choose
+
+      // If no auto-select, add a placeholder option to force user selection
+      if (!autoSelectEvent) {
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select one...';
+        placeholder.selected = true;
+        placeholder.hidden = true;
+        eventSelect.appendChild(placeholder);
+      }
+
       data.events.forEach((event) => {
         const option = document.createElement('option');
         option.value = event;
         option.textContent = event;
-        if (event === data.defaultEvent) {
+        if (event === autoSelectEvent) {
           option.selected = true;
         }
         eventSelect.appendChild(option);
@@ -67,6 +89,32 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error fetching events:', error);
       const eventSelect = document.getElementById('event');
       eventSelect.innerHTML = '<option value="" selected>Error loading events</option>';
+    });
+
+    // Fetch and populate the problem categories dropdown from config
+    fetch('/categories').then((response) => {
+      return response.json();
+    }).then((data) => {
+      const categorySelect = document.getElementById('problemCategory');
+      categorySelect.innerHTML = ''; // Clear loading placeholder
+
+      // Add placeholder option (optional field, so not hidden)
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Choose...';
+      placeholder.selected = true;
+      categorySelect.appendChild(placeholder);
+
+      data.categories.forEach((category) => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+      });
+    }).catch((error) => {
+      console.error('Error fetching categories:', error);
+      const categorySelect = document.getElementById('problemCategory');
+      categorySelect.innerHTML = '<option value="" selected>Error loading categories</option>';
     });
   };
 

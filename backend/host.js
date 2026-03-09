@@ -357,6 +357,34 @@ app.get('/events', (req, res) => {
 });
 
 
+// Endpoint for getting problem categories from config labels
+app.get('/categories', (req, res) => {
+  try {
+    // Prevent caching so config changes are reflected immediately
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
+    // Filter out priority labels and system labels - only return problem categories
+    const excludedLabels = [
+      'critical priority', 'high priority', 'medium priority', 'low priority',
+      'fta submitted', 'nexus submitted'
+    ];
+
+    const categories = config.trelloBoardLabels
+      .map(label => label.name)
+      .filter(name => !excludedLabels.includes(name.toLowerCase()));
+
+    writeToLogFile(`Categories requested, returning ${categories.length} categories`, 'info', 'host.js', '/categories');
+
+    res.status(200).json({ categories });
+  } catch (err) {
+    writeToLogFile(`Error in /categories endpoint: ${err.message}`, 'error', 'host.js', '/categories');
+    res.status(500).json({ error: 'Failed to load categories', categories: [] });
+  }
+});
+
+
 // Start the server
 app.listen(port, async () => {
   await trelloManager.verifyLabels();

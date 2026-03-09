@@ -90,6 +90,33 @@ document.addEventListener('DOMContentLoaded', () => {
       const eventSelect = document.getElementById('event');
       eventSelect.innerHTML = '<option value="" selected>Error loading events</option>';
     });
+
+    // Fetch and populate the problem categories dropdown from config
+    fetch('/categories').then((response) => {
+      return response.json();
+    }).then((data) => {
+      const categorySelect = document.getElementById('problemCategory');
+      categorySelect.innerHTML = ''; // Clear loading placeholder
+
+      // Add placeholder option
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Choose...';
+      placeholder.hidden = true;
+      placeholder.selected = true;
+      categorySelect.appendChild(placeholder);
+
+      data.categories.forEach((category) => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+      });
+    }).catch((error) => {
+      console.error('Error fetching categories:', error);
+      const categorySelect = document.getElementById('problemCategory');
+      categorySelect.innerHTML = '<option value="" selected>Error loading categories</option>';
+    });
   };
 
   form.addEventListener('submit', (event) => {
