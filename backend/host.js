@@ -72,9 +72,12 @@ const corsOptions = {
 
 // Log all requests
 app.use((req, res, next) => {
+  // Strip IPv6-mapped IPv4 prefix for cleaner logs
+  const clientIp = req.ip?.replace(/^::ffff:/, '') || 'unknown';
+
   if (req.path === '/') {
     writeToLogFile(`Server Interaction - PAGE LOADED: ${req.method} ${req.path}`, 'info', 'host.js', 'logging-middleware');
-    writeToLogFile(`Client IP: ${req.ip}`, 'info', 'host.js', 'logging-middleware');
+    writeToLogFile(`Client IP: ${clientIp}`, 'info', 'host.js', 'logging-middleware');
     next();
     return;
   }
