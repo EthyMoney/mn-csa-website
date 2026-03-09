@@ -55,8 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const eventSelect = document.getElementById('event');
       eventSelect.innerHTML = ''; // Clear loading placeholder
 
-      // If multiple events, add a placeholder option to force user selection
-      if (data.events.length > 1) {
+      // Determine which event to auto-select (if any)
+      let autoSelectEvent = null;
+      if (data.events.length === 1) {
+        // Only one event - auto-select it
+        autoSelectEvent = data.events[0];
+      } else if (data.events.length === 2) {
+        // Two events - auto-select the one that isn't the off-season event
+        autoSelectEvent = data.events.find(e => !e.toLowerCase().includes('off season')) || data.events[0];
+      }
+      // 3+ events: no auto-select, user must choose
+
+      // If no auto-select, add a placeholder option to force user selection
+      if (!autoSelectEvent) {
         const placeholder = document.createElement('option');
         placeholder.value = '';
         placeholder.textContent = 'Select one...';
@@ -69,8 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const option = document.createElement('option');
         option.value = event;
         option.textContent = event;
-        // Auto-select only if there's exactly one event
-        if (data.events.length === 1) {
+        if (event === autoSelectEvent) {
           option.selected = true;
         }
         eventSelect.appendChild(option);

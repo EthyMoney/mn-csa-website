@@ -120,14 +120,6 @@ module.exports.validateConfig = function () {
       writeToLogFile('No valid appPort found in config file. Set to default port (3000).', 'warn', 'pre-checks.js', 'validateConfig');
     }
 
-    // Check and fix defaultEvent if missing
-    if (!config.defaultEvent || typeof config.defaultEvent !== 'string') {
-      const firstEnabledEvent = config.trelloBoards?.find(board => board.enabled)?.frontendEventSelection || 'Off Season';
-      config.defaultEvent = firstEnabledEvent;
-      configModified = true;
-      writeToLogFile(`No valid defaultEvent found in config file. Set to "${firstEnabledEvent}".`, 'warn', 'pre-checks.js', 'validateConfig');
-    }
-
     // Check and fix trelloBoards entries - ensure each has an 'enabled' property
     if (config.trelloBoards && Array.isArray(config.trelloBoards)) {
       config.trelloBoards.forEach((board, index) => {
@@ -163,18 +155,6 @@ module.exports.validateConfig = function () {
     const enabledEvents = config.trelloBoards.filter(board => board.enabled);
     if (enabledEvents.length === 0) {
       writeToLogFile('Warning: No events are enabled in the config. Users will not be able to submit requests until at least one event has "enabled": true.', 'warn', 'pre-checks.js', 'validateConfig');
-    }
-
-    // Verify defaultEvent exists as an enabled event option
-    const allEventNames = config.trelloBoards.map(board => board.frontendEventSelection);
-    const enabledEventNames = enabledEvents.map(board => board.frontendEventSelection);
-    if (!allEventNames.includes(config.defaultEvent)) {
-      const newDefault = enabledEventNames[0] || allEventNames[0] || 'Off Season';
-      writeToLogFile(`defaultEvent "${config.defaultEvent}" does not exist in trelloBoards. Changed to "${newDefault}".`, 'warn', 'pre-checks.js', 'validateConfig');
-      config.defaultEvent = newDefault;
-      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    } else if (!enabledEventNames.includes(config.defaultEvent)) {
-      writeToLogFile(`Warning: defaultEvent "${config.defaultEvent}" is not enabled. Users will see it selected but it won't work for submissions.`, 'warn', 'pre-checks.js', 'validateConfig');
     }
 
     writeToLogFile('Config validation passed.', 'info', 'pre-checks.js', 'validateConfig');
