@@ -400,9 +400,18 @@ app.listen(port, async () => {
     if (eventType === 'change') {
       // Debounce to prevent multiple reloads from rapid file changes
       if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
+      debounceTimer = setTimeout(async () => {
         writeToLogFile('Config file changed, reloading...', 'info', 'host.js', 'config-watcher');
-        reloadConfig();
+        if (reloadConfig()) {
+          // Re-verify labels in case boards were added or trelloIds changed
+          try {
+            writeToLogFile('Re-running label verification after config reload...', 'info', 'host.js', 'config-watcher');
+            await trelloManager.verifyLabels();
+            writeToLogFile('Label verification complete after config reload.', 'info', 'host.js', 'config-watcher');
+          } catch (err) {
+            writeToLogFile(`Label verification after config reload failed: ${err.message}`, 'error', 'host.js', 'config-watcher');
+          }
+        }
       }, 1000);
     }
   });
