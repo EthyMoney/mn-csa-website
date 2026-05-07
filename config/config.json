@@ -5,8 +5,8 @@
   "appPort": 3000,
   "trelloBoards": [
     {
-      "frontendEventSelection": "Build/Off Season",
       "trelloId": "",
+      "frontendEventSelection": "Build/Off Season - Not Event Related",
       "enabled": true
     },
     {

@@ -136,16 +136,23 @@ async function createCard(title, teamNumber, contactEmail, contactName, frcEvent
   const config = getConfig();
   const trelloBoards = config.trelloBoards;
 
-  // find the id of the board we want to create the card on according to the selected event
-  let trelloId;
-  try {
-    trelloId = trelloBoards.find(board => board.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase()).trelloId;
-  } catch {
+  // find the board we want to create the card on according to the selected event
+  const board = trelloBoards.find(b => b.frontendEventSelection.toLowerCase() === frcEvent.toLowerCase());
+  if (!board) {
     writeToLogFile(`Error finding trelloId for board with event "${frcEvent}"`, 'error', 'trello.js', 'createCard');
     throw new Error(`Error finding trelloId for board with event "${frcEvent}". Did you provide a valid event?`);
   }
+  if (board.enabled === false) {
+    writeToLogFile(`Rejected submission for event "${frcEvent}": board is not enabled`, 'error', 'trello.js', 'createCard');
+    throw new Error(`Event "${frcEvent}" is not currently enabled for submissions.`);
+  }
+  const trelloId = board.trelloId;
   // find the id of the "incoming" list on the board so we can create the card there
   const listId = await getIncomingListIdOfBoard(trelloId);
+  if (!listId) {
+    writeToLogFile(`Could not find "incoming" list on board ${trelloId} for event "${frcEvent}"`, 'error', 'trello.js', 'createCard');
+    throw new Error(`Could not find an "incoming" list on the Trello board for event "${frcEvent}".`);
+  }
 
   // determine submission type and format description accordingly
   let formattedDescription;
@@ -337,7 +344,8 @@ async function getIncomingListIdOfBoard(trelloId) {
   const res = await fetch(`https://api.trello.com/1/boards/${trelloId}/lists?key=${config.trelloAppKey}&token=${config.trelloUserToken}`);
   if (res.ok) {
     const resJson = await res.json();
-    return resJson.find(list => list.name.toLowerCase() === 'incoming').id;
+    const incoming = resJson.find(list => list.name.toLowerCase() === 'incoming');
+    return incoming ? incoming.id : undefined;
   }
   else {
     return;

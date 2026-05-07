@@ -322,7 +322,10 @@ app.post(['/api/create', '/fta/api/create'], apiKeyMiddleware, [
     res.status(200).send('API Request received successfully!');
   }).catch((err) => {
     console.error(err);
-    res.status(500).send('An error occurred while processing the request. Details: ' + err.message);
+    // Treat unknown / disabled event and missing-list errors as client errors (400) rather than 500
+    const msg = err && err.message ? err.message : '';
+    const isClientError = /not currently enabled|valid event|incoming.*list/i.test(msg);
+    res.status(isClientError ? 400 : 500).send('An error occurred while processing the request. Details: ' + msg);
   });
 });
 
