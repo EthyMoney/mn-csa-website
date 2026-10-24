@@ -1,7 +1,7 @@
 {
   "name": "mn-csa-website",
   "private": true,
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "A simple web app to act as a front-end for the Minnesota CSA Trello board, used by both teams and FRC Nexus to submit support tickets.",
   "main": "main.js",
   "scripts": {
@@ -17,15 +17,15 @@
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1",
+    "express": "^5.3.0",
     "express-validator": "^7.3.2",
-    "helmet": "^8.1.0",
+    "helmet": "^8.3.0",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "eslint": "^10.3.0",
-    "globals": "^17.6.0",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
     "nodemon": "^3.1.14"
   }
 }
